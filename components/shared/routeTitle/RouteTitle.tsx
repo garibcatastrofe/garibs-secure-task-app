@@ -1,0 +1,67 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import { links } from "@/data/links";
+import { ChevronRight, Menu } from "lucide-react";
+import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
+import Link from "next/link";
+
+export function RouteTitle() {
+  const { toggleSidebar } = useSidebarStore();
+
+  const pathname = usePathname();
+
+  const segments = pathname !== null ? pathname.split("/").filter(Boolean) : [];
+
+  const mainRoute = links.find((link) => link.href === `/${segments[0]}`);
+
+  const addSegment =
+    mainRoute && segments.length > 2
+      ? segments.find((sub) => sub === `add`)
+      : mainRoute && segments.length > 1
+        ? segments.find((sub) => sub === `add`)
+        : null;
+
+  const updateSegment =
+    mainRoute && segments.length > 2
+      ? segments.find((sub) => sub === `update`)
+      : null;
+
+  return (
+    <header className="w-full py-6 px-4 border-b border-b-neutral-200">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={toggleSidebar}
+          className={`p-1 hover:bg-green-100 hover:text-green-800 rounded transition-all duration-300 lg:hidden cursor-pointer`}
+        >
+          <Menu className="size-4" />
+        </button>
+
+        <Link
+          className="md:text-xl font-light text-sm"
+          href={`${mainRoute?.href}`}
+        >
+          {mainRoute?.title}
+        </Link>
+
+        {addSegment && (
+          <>
+            <ChevronRight className="size-4 text-green-800 hidden md:block" />
+            <Link className="text-xl font-light hidden md:block" href={""}>
+              Agregar
+            </Link>
+          </>
+        )}
+
+        {updateSegment && (
+          <>
+            <ChevronRight className="size-4 text-green-800 hidden md:block" />
+            <Link className="text-xl font-light hidden md:block" href={""}>
+              Actualizar
+            </Link>
+          </>
+        )}
+      </div>
+    </header>
+  );
+}
