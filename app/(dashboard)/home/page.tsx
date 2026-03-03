@@ -1,11 +1,5 @@
-import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
+import { HomeContent } from "@/content/home/HomeContent";
 
 export default function HomePage() {
-  return (
-    <SectionContainer>
-      <div className="flex flex-col h-full p-4">
-        <p>Esta es la página de Inicio</p>
-      </div>
-    </SectionContainer>
-  );
+  return <HomeContent />;
 }
