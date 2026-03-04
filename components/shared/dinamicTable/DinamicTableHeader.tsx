@@ -29,11 +29,11 @@ export function DinamicTableHeader({
         <BouncingButton
           action={backAction}
           backgroundColorHover="#ffffff"
-          backgroundColor="#00A0D0"
+          backgroundColor="#22c55e"
           textColor="#ffffff"
-          textColorHover="#00A0D0"
+          textColorHover="#22c55e"
           border="2px solid #ffffff"
-          borderHover="2px solid #00A0D0"
+          borderHover="2px solid #22c55e"
           twClassName="w-fit h-fit p-4 rounded-2xl"
           disabled={false}
         >
@@ -44,11 +44,11 @@ export function DinamicTableHeader({
         <BouncingButton
           action={filterAction}
           backgroundColorHover="#ffffff"
-          backgroundColor="#00A0D0"
+          backgroundColor="#22c55e"
           textColor="#ffffff"
-          textColorHover="#00A0D0"
+          textColorHover="#22c55e"
           border="2px solid #ffffff"
-          borderHover="2px solid #00A0D0"
+          borderHover="2px solid #22c55e"
           twClassName="w-fit h-fit p-4 rounded-2xl"
           disabled={false}
         >
@@ -61,11 +61,11 @@ export function DinamicTableHeader({
         <BouncingButton
           action={addAction}
           backgroundColorHover="#ffffff"
-          backgroundColor="#00A0D0"
+          backgroundColor="#22c55e"
           textColor="#ffffff"
-          textColorHover="#00A0D0"
+          textColorHover="#22c55e"
           border="2px solid #ffffff"
-          borderHover="2px solid #00A0D0"
+          borderHover="2px solid #22c55e"
           twClassName="w-fit h-fit p-4 rounded-2xl"
           disabled={false}
         >
@@ -76,11 +76,11 @@ export function DinamicTableHeader({
         <BouncingButton
           action={excelAction}
           backgroundColorHover="#ffffff"
-          backgroundColor="#1D6F42"
+          backgroundColor="#22c55e"
           textColor="#ffffff"
-          textColorHover="#1D6F42"
+          textColorHover="#22c55e"
           border="2px solid #ffffff"
-          borderHover="2px solid #1D6F42"
+          borderHover="2px solid #22c55e"
           twClassName="w-fit h-fit p-4 rounded-2xl"
           disabled={false}
         >

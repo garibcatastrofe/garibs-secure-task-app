@@ -24,7 +24,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
-import { signUp } from "@/controllers/users/signUp";
+import { signIn } from "@/api/Users/controllers/signIn";
 
 /* TYPES */
 import { SignInForm } from "./types/SignInForm";
@@ -53,7 +53,7 @@ export function SignInContent() {
       formData.append("email", data.email);
       formData.append("password", data.password);
 
-      const response = await signUp(formData);
+      const response = await signIn(formData);
 
       if (response.ok) {
         setAnnouncement(
@@ -116,9 +116,9 @@ export function SignInContent() {
                 <Controller
                   name="email"
                   control={methods.control}
-                  rules={{
+                  /* rules={{
                     required: "El correo es necesario",
-                  }}
+                  }} */
                   render={({ field: { onChange, onBlur, value } }) => (
                     <input
                       onBlur={onBlur}
@@ -146,9 +146,9 @@ export function SignInContent() {
                 <Controller
                   name="password"
                   control={methods.control}
-                  rules={{
+                  /* rules={{
                     required: "La contraseña es necesaria",
-                  }}
+                  }} */
                   render={({ field: { onChange, onBlur, value } }) => (
                     <input
                       onBlur={onBlur}

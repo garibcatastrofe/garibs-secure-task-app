@@ -1,6 +1,6 @@
 "use server";
 
-export async function signUp(formData: FormData): Promise<{
+export async function signIn(formData: FormData): Promise<{
   ok: boolean;
   message: string;
 }> {

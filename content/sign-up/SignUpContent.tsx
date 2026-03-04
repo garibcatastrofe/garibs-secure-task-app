@@ -24,7 +24,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
-import { signUp } from "@/controllers/users/signUp";
+import { signUp } from "@/api/Users/controllers/signUp";
 
 /* TYPES */
 import { SignUpForm } from "./types/SignUpForm";
@@ -120,9 +120,9 @@ export function SignUpContent() {
                 <Controller
                   name="user_name"
                   control={methods.control}
-                  rules={{
+                  /* rules={{
                     required: "El nombre de usuario es necesario",
-                  }}
+                  }} */
                   render={({ field: { onChange, onBlur, value } }) => (
                     <input
                       onBlur={onBlur}
@@ -150,9 +150,9 @@ export function SignUpContent() {
                 <Controller
                   name="email"
                   control={methods.control}
-                  rules={{
+                  /* rules={{
                     required: "El correo es necesario",
-                  }}
+                  }} */
                   render={({ field: { onChange, onBlur, value } }) => (
                     <input
                       onBlur={onBlur}
@@ -180,9 +180,9 @@ export function SignUpContent() {
                 <Controller
                   name="password"
                   control={methods.control}
-                  rules={{
+                  /* rules={{
                     required: "La contraseña es necesaria",
-                  }}
+                  }} */
                   render={({ field: { onChange, onBlur, value } }) => (
                     <input
                       onBlur={onBlur}
@@ -210,9 +210,9 @@ export function SignUpContent() {
                 <Controller
                   name="password_confirm"
                   control={methods.control}
-                  rules={{
+                  /* rules={{
                     required: "La contraseña confirmada es necesaria",
-                  }}
+                  }} */
                   render={({ field: { onChange, onBlur, value } }) => (
                     <input
                       onBlur={onBlur}
