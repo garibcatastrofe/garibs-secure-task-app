@@ -34,7 +34,7 @@ import {
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { insertTask } from "@/api/Tasks/Infrastructure/insertTask";
+import { insertTask } from "@/api/Tasks/Infrastructure/taskController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";

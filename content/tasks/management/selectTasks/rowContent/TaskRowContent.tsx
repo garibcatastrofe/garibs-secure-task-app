@@ -5,6 +5,8 @@ import { SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
 import { ITaskMadeBy } from "@/api/Tasks/Domain/Interfaces/ITaskMadeBy";
+import { useModal } from "@/stores/modal/modalStore";
+import { DeleteTaskContent } from "@/content/tasks/management/deleteTask/DeleteTaskContent";
 
 export function TaskRowContent({
   task,
@@ -14,6 +16,7 @@ export function TaskRowContent({
   twBgColor: string;
 }) {
   const router = useRouter();
+  const { setModal } = useModal();
 
   const getTwTextColor = (state: string) => {
     if (state === "COMPLETADA") {
@@ -65,11 +68,16 @@ export function TaskRowContent({
             <SquarePen className="size-5" />
           </BouncingButton>
           <BouncingButton
-            action={() => /* openEditDeleteModal(
-                              dato.usuario.id,
-                              dato,
-                              "ELIMINAR",
-                            ) */ {}}
+            action={() =>
+              setModal(
+                true,
+                "Eliminar tarea",
+                <DeleteTaskContent
+                  task_id={task.task.id ?? 0}
+                  title={task.task.title}
+                />,
+              )
+            }
             backgroundColorHover="#ffffff"
             backgroundColor="#ef4444"
             textColor="#ffffff"

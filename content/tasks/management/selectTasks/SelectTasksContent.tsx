@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 import { ISelectTasksData } from "@/api/Tasks/Domain/Interfaces/ISelectTasksData";
 
 /* SERVER ACTION */
-import { selectTasks } from "@/api/Tasks/Infrastructure/selectTasks";
+import { selectTasks } from "@/api/Tasks/Infrastructure/taskController";
 
 export function SelectTasksContent() {
   const router = useRouter();

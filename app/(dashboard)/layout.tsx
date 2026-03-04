@@ -1,6 +1,7 @@
 "use client";
 
 import { Announcement } from "@/components/shared/announcement/Announcement";
+import { Modal } from "@/components/shared/modal/Modal";
 import { RouteTitle } from "@/components/shared/routeTitle/RouteTitle";
 import { Sidebar } from "@/components/shared/sidebar/Sidebar";
 import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
@@ -16,6 +17,7 @@ export default function DashboardLayout({
     <div className="flex min-h-dvh">
       <Sidebar />
       <Announcement />
+      <Modal />
       <div
         className={`flex flex-col h-dvh w-full transition-all duration-300 ${
           expanded

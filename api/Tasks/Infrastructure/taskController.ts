@@ -5,6 +5,38 @@ import { IQuery } from "@/api/Shared/Domain/Interfaces/IQuery";
 import { ITaskPrimitive } from "@/api/Tasks/Domain/Interfaces/ITaskPrimitive";
 import { ISelectTasksResponse } from "../Domain/Interfaces/ISelectTasksResponse";
 
+export async function insertTask(formData: FormData): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  // Simular delay del backend
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  try {
+    const title = formData.get("title");
+    const description = formData.get("description");
+    const state = formData.get("state");
+    const user_id = formData.get("user_id");
+
+    console.log({
+      title,
+      description,
+      state,
+      user_id,
+    });
+
+    return {
+      ok: true,
+      message: "Tarea guardada correctamente",
+    };
+  } catch {
+    return {
+      ok: false,
+      message: "Ocurrió un error al guardar la tarea",
+    };
+  }
+}
+
 export async function selectTasks(
   query: IQuery<ITaskPrimitive>,
 ): Promise<ISelectTasksResponse> {
@@ -56,8 +88,7 @@ export async function selectTasks(
           task: {
             id: 4,
             title: "Tarea 4",
-            description:
-              "Creo que realmente no necesito esta tarea",
+            description: "Creo que realmente no necesito esta tarea",
             created_date: "2026-02-17 10:45:00",
             state: "CANCELADA",
             user_id: 1,
@@ -74,6 +105,32 @@ export async function selectTasks(
         "Ocurrió un error al buscar las tareas, intente nuevamente más tarde",
       data: [],
       count: 0,
+    };
+  }
+}
+
+export async function deleteTask(formData: FormData): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  // Simular delay del backend
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  try {
+    const id = formData.get("id");
+
+    console.log({
+      id,
+    });
+
+    return {
+      ok: true,
+      message: "Tarea eliminada correctamente",
+    };
+  } catch {
+    return {
+      ok: false,
+      message: "Ocurrió un error al eliminar la tarea",
     };
   }
 }
