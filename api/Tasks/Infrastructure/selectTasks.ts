@@ -40,6 +40,30 @@ export async function selectTasks(
           },
           user_name: "Pirita Dreemurr",
         },
+        {
+          task: {
+            id: 3,
+            title: "Tarea 3",
+            description:
+              "Esta tarea es super importante así que ponte las pilas!!!!",
+            created_date: "2026-02-17 10:45:00",
+            state: "EN PROCESO",
+            user_id: 1,
+          },
+          user_name: "Pirita Dreemurr",
+        },
+        {
+          task: {
+            id: 4,
+            title: "Tarea 4",
+            description:
+              "Creo que realmente no necesito esta tarea",
+            created_date: "2026-02-17 10:45:00",
+            state: "CANCELADA",
+            user_id: 1,
+          },
+          user_name: "Pirita Dreemurr",
+        },
       ],
       count: 2,
     };

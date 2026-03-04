@@ -23,17 +23,14 @@ import { useState } from "react";
 /* ICONS */
 import {
   ArrowLeft,
-  Check,
   ChevronDown,
   CircleCheckBig,
   CircleOff,
   Loader,
   Save,
-  X,
 } from "lucide-react";
 
 /* NAVIGATION */
-import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
@@ -59,12 +56,9 @@ export function InsertUpdateTaskContent({
   id: string;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
+
   const { setAnnouncement } = useAnnouncement();
   const [saving, setSaving] = useState(false);
-
-  const rawPath = pathname.split("/").at(isUpdate ? -3 : -2);
-  const path = rawPath ?? null;
 
   const methods = useForm<TaskFormValues>({
     defaultValues: {
@@ -143,7 +137,7 @@ export function InsertUpdateTaskContent({
 
         <div className="flex gap-4">
           <p>
-            Fecha: <span className="text-[#00A0D0]">{getDate()}</span>
+            Fecha: <span className="text-green-500">{getDate()}</span>
           </p>
         </div>
       </div>
@@ -166,9 +160,9 @@ export function InsertUpdateTaskContent({
                 <Controller
                   name="title"
                   control={methods.control}
-                  rules={{
+                  /* rules={{
                     required: "El título es necesario",
-                  }}
+                  }} */
                   render={({ field: { onChange, onBlur, value } }) => (
                     <input
                       onBlur={onBlur}
@@ -179,7 +173,7 @@ export function InsertUpdateTaskContent({
                       minLength={2}
                       maxLength={50}
                       placeholder="Tarea para..."
-                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
+                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-green-100 transition-all duration-300 placeholder:text-neutral-500"
                     />
                   )}
                 />
@@ -191,14 +185,14 @@ export function InsertUpdateTaskContent({
               </div>
 
               {/* DESCRIPTION */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 my-4">
                 <p>Descripción</p>
                 <Controller
                   name="description"
                   control={methods.control}
-                  rules={{
+                  /* rules={{
                     required: "La descripción es necesaria",
-                  }}
+                  }} */
                   render={({ field: { onChange, onBlur, value } }) => (
                     <textarea
                       onBlur={onBlur}
@@ -208,7 +202,7 @@ export function InsertUpdateTaskContent({
                       minLength={30}
                       maxLength={750}
                       placeholder="Necesito hacer esto... Necesito llevar esto a... Comprar dos docenas de huevos..."
-                      className="w-full text-sm resize-none h-40 px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
+                      className="w-full text-sm resize-none h-40 px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-green-100 transition-all duration-300 placeholder:text-neutral-500"
                     />
                   )}
                 />
@@ -219,14 +213,15 @@ export function InsertUpdateTaskContent({
                 )}
               </div>
 
-              <div className="flex flex-col gap-2">
+              {/* ESTADO */}
+              <div className="flex flex-col gap-2 mb-4">
                 <p>Estado</p>
                 <Controller
                   control={methods.control}
                   name="state"
-                  rules={{
+                  /* rules={{
                     required: "La estado es necesario",
-                  }}
+                  }} */
                   render={({ field }) => (
                     <Combobox
                       items={taskCompleted}
@@ -237,7 +232,7 @@ export function InsertUpdateTaskContent({
                     >
                       <ComboboxTrigger
                         render={
-                          <Button className="w-full hover:hover:bg-[#d9f2f9] cursor-pointer justify-center font-normal flex items-center bg-white text-black border border-neutral-200 rounded-xl">
+                          <Button className="w-full hover:hover:bg-green-100 cursor-pointer justify-center font-normal flex items-center bg-white text-black border border-neutral-200 rounded-xl">
                             <div className="w-full flex justify-start overflow-x-hidden">
                               <p className="truncate">
                                 <ComboboxValue />
@@ -290,19 +285,55 @@ export function InsertUpdateTaskContent({
             </div>
 
             {/* BODY */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 px-4 pt-4">
-              
+            <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 px-4 pt-4 relative">
+              {/* USER_ID */}
+              <div className="flex flex-col gap-2 h-full">
+                <p>ID de usuario</p>
+                <Controller
+                  name="user_id"
+                  control={methods.control}
+                  /* rules={{ required: "El ID de usuario es necesario" }} */
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <input
+                      onBlur={onBlur}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter no numérico
+                        onChange(val); // Actualiza el estado con solo números
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "e" || e.key === "-" || e.key === "+") {
+                          e.preventDefault(); // Bloquea la entrada de estos caracteres
+                        }
+                      }}
+                      value={value}
+                      type="text" // Cambia a "text" para evitar comportamientos extraños con números
+                      inputMode="numeric" // Ayuda en móviles
+                      pattern="[0-9]*" // Solo números
+                      id="user_id"
+                      placeholder="1"
+                      min={1}
+                      max={99}
+                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-green-100 transition-all duration-300 placeholder:text-neutral-500"
+                    />
+                  )}
+                />
+                {methods.formState.errors.user_id && (
+                  <p className="text-red-500 text-sm">
+                    {methods.formState.errors.user_id.message}
+                  </p>
+                )}
+              </div>
 
               {/* BOTÓN GUARDAR */}
               <div className="w-full sticky bottom-0 py-4 bg-white">
                 <BouncingButton
                   action={saving ? () => {} : methods.handleSubmit(onSubmit)}
                   backgroundColorHover="#ffffff"
-                  backgroundColor="#00A0D0"
+                  backgroundColor="#22c55e"
                   textColor="#ffffff"
-                  textColorHover="#00A0D0"
+                  textColorHover="#22c55e"
                   border="2px solid #ffffff"
-                  borderHover="2px solid #00A0D0"
+                  borderHover="2px solid #22c55e"
                   twClassName="w-full h-fit px-4 py-2 rounded-2xl"
                   disabled={saving ? true : false}
                 >

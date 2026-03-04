@@ -22,12 +22,12 @@ export async function insertTask(formData: FormData): Promise<{
 
     return {
       ok: true,
-      message: "Reporte insertado correctamente",
+      message: "Tarea guardada correctamente",
     };
   } catch {
     return {
       ok: false,
-      message: "Ocurrió un error al ingresar el reporte",
+      message: "Ocurrió un error al guardar la tarea",
     };
   }
 }

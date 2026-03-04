@@ -15,6 +15,18 @@ export function TaskRowContent({
 }) {
   const router = useRouter();
 
+  const getTwTextColor = (state: string) => {
+    if (state === "COMPLETADA") {
+      return "text-green-500";
+    } else if (state === "NO COMPLETADA") {
+      return "text-blue-500";
+    } else if (state === "EN PROCESO") {
+      return "text-yellow-500";
+    } else {
+      return "text-red-500";
+    }
+  };
+
   return (
     <>
       <DinamicTd twClassName="">
@@ -27,9 +39,7 @@ export function TaskRowContent({
         <p>{task.task.created_date}</p>
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p
-          className={`font-bold ${task.task.state === "COMPLETADA" ? "text-green-500" : "text-red-500"}`}
-        >
+        <p className={`font-bold ${getTwTextColor(task.task.state)}`}>
           {task.task.state}
         </p>
       </DinamicTd>
