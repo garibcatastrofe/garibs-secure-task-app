@@ -37,11 +37,47 @@ export async function insertTask(formData: FormData): Promise<{
   }
 }
 
+export async function updateTask(formData: FormData): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  // Simular delay del backend
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  try {
+    const id = formData.get("id");
+    const title = formData.get("title");
+    const description = formData.get("description");
+    const state = formData.get("state");
+    const user_id = formData.get("user_id");
+
+    console.log({
+      id,
+      title,
+      description,
+      state,
+      user_id,
+    });
+
+    return {
+      ok: true,
+      message: "Tarea actualizada correctamente",
+    };
+  } catch {
+    return {
+      ok: false,
+      message: "Ocurrió un error al actualizar la tarea",
+    };
+  }
+}
+
 export async function selectTasks(
   query: IQuery<ITaskPrimitive>,
 ): Promise<ISelectTasksResponse> {
   // Simular delay del backend
   await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  console.log(query);
 
   try {
     return {
@@ -96,7 +132,7 @@ export async function selectTasks(
           user_name: "Pirita Dreemurr",
         },
       ],
-      count: 2,
+      count: 4,
     };
   } catch {
     return {

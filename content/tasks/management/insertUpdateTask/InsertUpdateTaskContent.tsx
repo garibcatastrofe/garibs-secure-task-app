@@ -21,14 +21,7 @@ import { useForm, Controller, FormProvider } from "react-hook-form";
 import { useState } from "react";
 
 /* ICONS */
-import {
-  ArrowLeft,
-  ChevronDown,
-  CircleCheckBig,
-  CircleOff,
-  Loader,
-  Save,
-} from "lucide-react";
+import { ArrowLeft, ChevronDown, Loader, Save } from "lucide-react";
 
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
@@ -83,26 +76,11 @@ export function InsertUpdateTaskContent({
       const response = await insertTask(formData);
 
       if (response.ok) {
-        setAnnouncement(
-          true,
-          "bg-green-500",
-          <div className="flex gap-2 items-center">
-            <CircleCheckBig className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
-        console.log(data);
+        setAnnouncement(true, true, response.message);
 
         //methods.reset();
       } else {
-        setAnnouncement(
-          true,
-          "bg-red-500",
-          <div className="flex gap-2 items-center">
-            <CircleOff className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
+        setAnnouncement(true, false, response.message);
       }
 
       setSaving(false);

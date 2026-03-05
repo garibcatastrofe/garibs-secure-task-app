@@ -7,15 +7,15 @@ import { useForm, FormProvider } from "react-hook-form";
 import { useState } from "react";
 import { Loader, Trash2 } from "lucide-react";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
-import { deleteTask } from "@/api/Tasks/Infrastructure/taskController";
 import { useModal } from "@/stores/modal/modalStore";
+import { deleteUser } from "@/api/Users/Infrastructure/userController";
 
-export function DeleteTaskContent({
-  title,
-  task_id,
+export function DeleteUserContent({
+  user_name,
+  user_id,
 }: {
-  title: string;
-  task_id: number;
+  user_name: string;
+  user_id: number;
 }) {
   const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
@@ -23,7 +23,7 @@ export function DeleteTaskContent({
 
   const methods = useForm<{ id: number }>({
     defaultValues: {
-      id: task_id,
+      id: user_id,
     },
   });
 
@@ -35,7 +35,7 @@ export function DeleteTaskContent({
 
       formData.append("id", id.toString());
 
-      const response = await deleteTask(formData);
+      const response = await deleteUser(formData);
 
       if (response.ok) {
         setAnnouncement(true, true, response.message);
@@ -55,11 +55,11 @@ export function DeleteTaskContent({
       <div className="w-full">
         <p>
           Al dar clic en{" "}
-          <span className="text-red-500 font-semibold">Eliminar</span>, la
-          tarea:
+          <span className="text-red-500 font-semibold">Eliminar</span>, el
+          usuario:
         </p>
-        <p className="w-full truncate font-semibold">{title}</p>
-        <p>Será eliminada para siempre (¡Mucho tiempo!)</p>
+        <p className="w-full truncate font-semibold">{user_name}</p>
+        <p>Será eliminado para siempre (¡Mucho tiempo!)</p>
       </div>
       <div className="">
         {/* BOTÓN GUARDAR */}

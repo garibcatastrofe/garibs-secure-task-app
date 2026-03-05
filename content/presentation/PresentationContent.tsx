@@ -2,8 +2,8 @@
 
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
-import { AppIcon } from "@/components/svg/AppIcon";
-import { HomeIcon } from "@/components/svg/HomeIcon";
+import { AppIcon } from "@/components/svg/shared/AppIcon";
+import { HomeIcon } from "@/components/svg/presentation/HomeIcon";
 import { useRouter } from "next/navigation";
 
 export function PresentationContent() {

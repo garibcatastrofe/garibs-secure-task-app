@@ -9,22 +9,16 @@ import { useForm, Controller, FormProvider } from "react-hook-form";
 import { useState } from "react";
 
 /* ICONS */
-import { GreetingIcon } from "@/components/svg/GreetingIcon";
-import { AppIcon } from "@/components/svg/AppIcon";
-import {
-  ArrowLeft,
-  CircleCheckBig,
-  CircleOff,
-  Loader,
-  Rocket,
-} from "lucide-react";
+import { GreetingIcon } from "@/components/svg/sign-in/GreetingIcon";
+import { AppIcon } from "@/components/svg/shared/AppIcon";
+import { ArrowLeft, Loader, Rocket } from "lucide-react";
 
 /* NAVIGATION */
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
-import { signUp } from "@/api/Users/controllers/signUp";
+import { signUp } from "@/api/Users/Infrastructure/userController";
 
 /* TYPES */
 import { SignUpForm } from "./types/SignUpForm";
@@ -60,27 +54,13 @@ export function SignUpContent() {
       const response = await signUp(formData);
 
       if (response.ok) {
-        setAnnouncement(
-          true,
-          "bg-green-500",
-          <div className="flex gap-2 items-center">
-            <CircleCheckBig className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
+        setAnnouncement(true, true, response.message);
         console.log(data);
 
         /* methods.reset(); */
         router.push("/home");
       } else {
-        setAnnouncement(
-          true,
-          "bg-red-500",
-          <div className="flex gap-2 items-center">
-            <CircleOff className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
+        setAnnouncement(true, false, response.message);
       }
 
       setSaving(false);

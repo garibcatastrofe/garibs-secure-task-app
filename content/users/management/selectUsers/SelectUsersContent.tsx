@@ -5,44 +5,44 @@ import { SectionContainer } from "@/components/shared/sectionContainer/SectionCo
 import { DinamicTable } from "@/components/shared/dinamicTable/DinamicTable";
 import { DinamicTh } from "@/components/shared/dinamicTable/dinamicRow/DinamicTh";
 import { DinamicRow } from "@/components/shared/dinamicTable/dinamicRow/DinamicRow";
-import { TaskRowContent } from "@/content/tasks/management/selectTasks/rowContent/TaskRowContent";
+import { UserRowContent } from "@/content/users/management/selectUsers/rowContent/UserRowContent";
 
 /* DATA */
-import { tasksColumns } from "@/content/tasks/data/columns/tasksColumns";
+import { usersColumns } from "@/content/users/data/columns/usersColumns";
 
 /* HOOKS */
 import { useState, useEffect } from "react";
 
 /* ICONS */
-import { House } from "lucide-react";
+import { CircleOff, House } from "lucide-react";
 
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
 
 /* TYPES */
-import { ISelectTasksData } from "@/api/Tasks/Domain/Interfaces/ISelectTasksData";
+import { ISelectUsersData } from "@/api/Users/Domain/Interfaces/ISelectUsersData";
 
 /* SERVER ACTION */
-import { selectTasks } from "@/api/Tasks/Infrastructure/taskController";
+import { selectUsers } from "@/api/Users/Infrastructure/userController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
-export function SelectTasksContent() {
+export function SelectUsersContent() {
   const router = useRouter();
   const { setAnnouncement } = useAnnouncement();
 
-  const [tasks, setTasks] = useState<ISelectTasksData>({ data: [], count: 0 });
+  const [users, setUsers] = useState<ISelectUsersData>({ data: [], count: 0 });
   const [loading, setLoading] = useState(true);
-  const type = "tarea";
+  const type = "usuario";
 
   const getTwBgColor = ({ index }: { index: number }) => {
     return index % 2 ? "bg-neutral-100" : "bg-white";
   };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await selectTasks({
+    const fetchUsers = async () => {
+      const response = await selectUsers({
         page: 0,
         perPage: 10,
         order: "asc",
@@ -51,7 +51,7 @@ export function SelectTasksContent() {
       });
 
       if (response.ok) {
-        setTasks(response);
+        setUsers(response);
       } else {
         setAnnouncement(true, false, response.message);
       }
@@ -59,29 +59,29 @@ export function SelectTasksContent() {
       setLoading(false);
     };
 
-    fetchTasks();
+    fetchUsers();
   }, []);
 
   return (
     <SectionContainer>
       <DinamicTable
-        theadColumns={tasksColumns.map((column, index) => (
+        theadColumns={usersColumns.map((column, index) => (
           <DinamicTh key={index} column={column} />
         ))}
-        tbodyRows={tasks.data.map((task, index) => (
+        tbodyRows={users.data.map((user, index) => (
           <DinamicRow key={index} twBgColor={getTwBgColor({ index: index })}>
-            <TaskRowContent
-              task={task}
+            <UserRowContent
+              user={user}
               twBgColor={`${getTwBgColor({ index: index })}`}
             />
           </DinamicRow>
         ))}
         loading={loading}
-        count={tasks.count}
+        count={users.count}
         type={type}
         backAction={() => router.push("/home")}
         filterAction={() => {}}
-        addAction={() => router.push(`/tasks/add`)}
+        addAction={() => router.push(`/users/add`)}
         excelAction={() => {}}
         backContent={<House className="size-5" />}
       />

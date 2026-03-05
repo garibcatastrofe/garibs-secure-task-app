@@ -9,8 +9,8 @@ import { useForm, Controller, FormProvider } from "react-hook-form";
 import { useState } from "react";
 
 /* ICONS */
-import { EntranceIcon } from "@/components/svg/EntranceIcon";
-import { AppIcon } from "@/components/svg/AppIcon";
+import { EntranceIcon } from "@/components/svg/sign-up/EntranceIcon";
+import { AppIcon } from "@/components/svg/shared/AppIcon";
 import {
   ArrowLeft,
   CircleCheckBig,
@@ -24,7 +24,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
-import { signIn } from "@/api/Users/controllers/signIn";
+import { signIn } from "@/api/Users/Infrastructure/userController";
 
 /* TYPES */
 import { SignInForm } from "./types/SignInForm";
@@ -33,7 +33,7 @@ import { SignInForm } from "./types/SignInForm";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 export function SignInContent() {
-  const router = useRouter()
+  const router = useRouter();
   const { setAnnouncement } = useAnnouncement();
   const [saving, setSaving] = useState(false);
 
@@ -56,27 +56,13 @@ export function SignInContent() {
       const response = await signIn(formData);
 
       if (response.ok) {
-        setAnnouncement(
-          true,
-          "bg-green-500",
-          <div className="flex gap-2 items-center">
-            <CircleCheckBig className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
+        setAnnouncement(true, true, response.message);
         console.log(data);
 
         /* methods.reset(); */
-        router.push("/home")
+        router.push("/home");
       } else {
-        setAnnouncement(
-          true,
-          "bg-red-500",
-          <div className="flex gap-2 items-center">
-            <CircleOff className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
+        setAnnouncement(true, false, response.message);
       }
 
       setSaving(false);

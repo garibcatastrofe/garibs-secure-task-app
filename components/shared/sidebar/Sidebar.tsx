@@ -1,7 +1,7 @@
 "use client";
 
 import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
-import { AppIcon } from "@/components/svg/AppIcon";
+import { AppIcon } from "@/components/svg/shared/AppIcon";
 import { Menu, LogOut, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
