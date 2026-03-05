@@ -7,7 +7,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { useState } from "react";
 import { Loader, Trash2 } from "lucide-react";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
-import { deleteTask } from "@/api/Tasks/Infrastructure/taskController";
+import { deleteTask } from "@/src/Tasks/Infrastructure/taskController";
 import { useModal } from "@/stores/modal/modalStore";
 
 export function DeleteTaskContent({

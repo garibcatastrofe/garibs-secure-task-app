@@ -5,7 +5,7 @@ import { SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
 import { useModal } from "@/stores/modal/modalStore";
-import { IUserPrimitive } from "@/api/Users/Domain/Interfaces/IUserPrimitive";
+import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
 import { DeleteUserContent } from "../../deleteUser/DeleteUserContent";
 
 export function UserRowContent({

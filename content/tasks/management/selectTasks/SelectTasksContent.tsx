@@ -20,10 +20,10 @@ import { House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 /* TYPES */
-import { ISelectTasksData } from "@/api/Tasks/Domain/Interfaces/ISelectTasksData";
+import { ISelectTasksData } from "@/src/Tasks/Domain/Interfaces/ISelectTasksData";
 
 /* SERVER ACTION */
-import { selectTasks } from "@/api/Tasks/Infrastructure/taskController";
+import { selectTasks } from "@/src/Tasks/Infrastructure/taskController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";

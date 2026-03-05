@@ -11,20 +11,14 @@ import { useState } from "react";
 /* ICONS */
 import { EntranceIcon } from "@/components/svg/sign-up/EntranceIcon";
 import { AppIcon } from "@/components/svg/shared/AppIcon";
-import {
-  ArrowLeft,
-  CircleCheckBig,
-  CircleOff,
-  Loader,
-  Rocket,
-} from "lucide-react";
+import { ArrowLeft, Loader, Rocket } from "lucide-react";
 
 /* NAVIGATION */
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
-import { signIn } from "@/api/Users/Infrastructure/userController";
+import { signIn } from "@/src/Users/Infrastructure/userController";
 
 /* TYPES */
 import { SignInForm } from "./types/SignInForm";

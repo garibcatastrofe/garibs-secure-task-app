@@ -14,16 +14,16 @@ import { usersColumns } from "@/content/users/data/columns/usersColumns";
 import { useState, useEffect } from "react";
 
 /* ICONS */
-import { CircleOff, House } from "lucide-react";
+import { House } from "lucide-react";
 
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
 
 /* TYPES */
-import { ISelectUsersData } from "@/api/Users/Domain/Interfaces/ISelectUsersData";
+import { ISelectUsersData } from "@/src/Users/Domain/Interfaces/ISelectUsersData";
 
 /* SERVER ACTION */
-import { selectUsers } from "@/api/Users/Infrastructure/userController";
+import { selectUsers } from "@/src/Users/Infrastructure/userController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";

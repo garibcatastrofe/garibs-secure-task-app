@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Loader, Trash2 } from "lucide-react";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { useModal } from "@/stores/modal/modalStore";
-import { deleteUser } from "@/api/Users/Infrastructure/userController";
+import { deleteUser } from "@/src/Users/Infrastructure/userController";
 
 export function DeleteUserContent({
   user_name,

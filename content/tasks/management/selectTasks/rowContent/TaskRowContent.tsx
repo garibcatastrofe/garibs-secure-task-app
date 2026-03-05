@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
-import { ITaskMadeBy } from "@/api/Tasks/Domain/Interfaces/ITaskMadeBy";
+import { ITaskMadeBy } from "@/src/Tasks/Domain/Interfaces/ITaskMadeBy";
 import { useModal } from "@/stores/modal/modalStore";
 import { DeleteTaskContent } from "@/content/tasks/management/deleteTask/DeleteTaskContent";
 

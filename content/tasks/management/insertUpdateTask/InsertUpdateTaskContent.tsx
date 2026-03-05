@@ -27,7 +27,7 @@ import { ArrowLeft, ChevronDown, Loader, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { insertTask } from "@/api/Tasks/Infrastructure/taskController";
+import { insertTask } from "@/src/Tasks/Infrastructure/taskController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";

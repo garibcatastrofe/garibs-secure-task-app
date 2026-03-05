@@ -1,8 +1,8 @@
 "use server";
 
 /* TYPES */
-import { IQuery } from "@/api/Shared/Domain/Interfaces/IQuery";
-import { ITaskPrimitive } from "@/api/Tasks/Domain/Interfaces/ITaskPrimitive";
+import { IQuery } from "@/src/Shared/Domain/Interfaces/IQuery";
+import { ITaskPrimitive } from "@/src/Tasks/Domain/Interfaces/ITaskPrimitive";
 import { ISelectTasksResponse } from "../Domain/Interfaces/ISelectTasksResponse";
 
 export async function insertTask(formData: FormData): Promise<{

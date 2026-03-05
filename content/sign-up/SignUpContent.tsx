@@ -18,7 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
-import { signUp } from "@/api/Users/Infrastructure/userController";
+import { signUp } from "@/src/Users/Infrastructure/userController";
 
 /* TYPES */
 import { SignUpForm } from "./types/SignUpForm";

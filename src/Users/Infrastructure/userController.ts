@@ -1,6 +1,6 @@
 "use server";
 
-import { IQuery } from "@/api/Shared/Domain/Interfaces/IQuery";
+import { IQuery } from "@/src/Shared/Domain/Interfaces/IQuery";
 import { ISelectUsersResponse } from "../Domain/Interfaces/ISelectUsersResponse";
 import { IUserPrimitive } from "../Domain/Interfaces/IUserPrimitive";
 

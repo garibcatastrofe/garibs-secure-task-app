@@ -22,7 +22,7 @@ import {
   insertUser,
   selectUserById,
   updateUser,
-} from "@/api/Users/Infrastructure/userController";
+} from "@/src/Users/Infrastructure/userController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
