@@ -9,6 +9,9 @@ import { useState, useEffect } from "react";
 /* UTILS */
 import { formatDate, formatTime } from "@/utils/date";
 
+/* LIBS */
+import { motion } from "framer-motion";
+
 export function HomeContent() {
   const [dateTime, setDateTime] = useState({
     date: formatDate(new Date()),
@@ -28,7 +31,12 @@ export function HomeContent() {
 
   return (
     <SectionContainer>
-      <div className="flex flex-col items-center justify-center h-full px-4">
+      <motion.div
+        className="flex flex-col items-center justify-center h-full px-4"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+      >
         <p className="text-2xl font-semibold lg:text-6xl md:text-4xl text-neutral-900">
           ¡Hola, <span className="text-green-500">Pirita Dremurr</span>!
         </p>
@@ -38,7 +46,7 @@ export function HomeContent() {
         <p className="mt-2 text-xl font-semibold lg:text-3xl md:text-2xl text-neutral-900">
           {dateTime.time}
         </p>
-      </div>
+      </motion.div>
     </SectionContainer>
   );
 }

@@ -7,6 +7,7 @@ import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd
 import { ITaskMadeBy } from "@/src/Tasks/Domain/Interfaces/ITaskMadeBy";
 import { useModal } from "@/stores/modal/modalStore";
 import { DeleteTaskContent } from "@/content/tasks/management/deleteTask/DeleteTaskContent";
+import { getTwTextColor } from "@/utils/getTwTextColor";
 
 export function TaskRowContent({
   task,
@@ -17,18 +18,6 @@ export function TaskRowContent({
 }) {
   const router = useRouter();
   const { setModal } = useModal();
-
-  const getTwTextColor = (state: string) => {
-    if (state === "COMPLETADA") {
-      return "text-green-500";
-    } else if (state === "NO COMPLETADA") {
-      return "text-blue-500";
-    } else if (state === "EN PROCESO") {
-      return "text-yellow-500";
-    } else {
-      return "text-red-500";
-    }
-  };
 
   return (
     <>

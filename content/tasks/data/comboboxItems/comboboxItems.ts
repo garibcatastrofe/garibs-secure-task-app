@@ -1,6 +1,6 @@
-export const taskCompleted: string[] = [
+export const taskStates: string[] = [
   "COMPLETADA",
   "NO COMPLETADA",
-  "EN PROGRESO",
+  "EN PROCESO",
   "CANCELADA",
 ];

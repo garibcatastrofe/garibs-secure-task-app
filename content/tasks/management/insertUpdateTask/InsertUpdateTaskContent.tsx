@@ -1,33 +1,34 @@
 "use client";
 
 /* COMPONENTS */
-import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import {
   Combobox,
   ComboboxContent,
   ComboboxEmpty,
+  ComboboxInput,
   ComboboxItem,
   ComboboxList,
-  ComboboxTrigger,
-  ComboboxValue,
 } from "@/components/ui/combobox";
-import { Button } from "@/components/ui/button";
 
 /* DATA */
-import { taskCompleted } from "@/content/tasks/data/comboboxItems/comboboxItems";
+import { taskStates } from "@/content/tasks/data/comboboxItems/comboboxItems";
 
 /* HOOKS */
 import { useForm, Controller, FormProvider } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /* ICONS */
-import { ArrowLeft, ChevronDown, Loader, Save } from "lucide-react";
+import { Save } from "lucide-react";
 
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { insertTask } from "@/src/Tasks/Infrastructure/taskController";
+import {
+  insertTask,
+  updateTask,
+  selectTaskById,
+} from "@/src/Tasks/Infrastructure/taskController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -40,6 +41,14 @@ import { getDate } from "@/utils/date";
 
 /* LIBS */
 import { motion } from "framer-motion";
+import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
+import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
+import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
+import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
+import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
+import { InsertUpdateTaskIcon } from "@/components/svg/tasks/InsertUpdateTaskIcon";
+import { getTwTextColor } from "@/utils/getTwTextColor";
+import { getTwBgColor } from '@/utils/getTwBgColor'
 
 export function InsertUpdateTaskContent({
   isUpdate,
@@ -52,15 +61,9 @@ export function InsertUpdateTaskContent({
 
   const { setAnnouncement } = useAnnouncement();
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const methods = useForm<TaskFormValues>({
-    defaultValues: {
-      title: "",
-      description: "",
-      state: "",
-      user_id: 0,
-    },
-  });
+  const methods = useForm<TaskFormValues>();
 
   const onSubmit = async (data: TaskFormValues) => {
     try {
@@ -73,14 +76,24 @@ export function InsertUpdateTaskContent({
       formData.append("state", data.state);
       formData.append("user_id", data.user_id.toString());
 
-      const response = await insertTask(formData);
+      if (isUpdate) {
+        const response = await updateTask(formData);
 
-      if (response.ok) {
-        setAnnouncement(true, true, response.message);
-
-        //methods.reset();
+        if (response.ok) {
+          setAnnouncement(true, true, response.message);
+        } else {
+          setAnnouncement(true, false, response.message);
+        }
       } else {
-        setAnnouncement(true, false, response.message);
+        const response = await insertTask(formData);
+
+        if (response.ok) {
+          setAnnouncement(true, true, response.message);
+
+          //methods.reset();
+        } else {
+          setAnnouncement(true, false, response.message);
+        }
       }
 
       setSaving(false);
@@ -89,155 +102,161 @@ export function InsertUpdateTaskContent({
     }
   };
 
+  useEffect(() => {
+    try {
+      const endLoading = () => {
+        setLoading(false);
+      };
+
+      if (isUpdate) {
+        const fetchTask = async () => {
+          const response = await selectTaskById(Number(id));
+
+          if (response.ok) {
+            methods.reset({
+              id: Number(id),
+              title: response.task.title,
+              description: response.task.description,
+              state: response.task.state,
+              user_id: response.task.user_id,
+            });
+            endLoading();
+          } else {
+            setAnnouncement(true, false, response.message);
+
+            router.push("/tasks");
+          }
+        };
+
+        fetchTask();
+      } else {
+        methods.reset({
+          id: 0,
+          title: "",
+          description: "",
+          state: "NO COMPLETADA",
+          user_id: 0,
+        });
+        endLoading();
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }, [id, isUpdate, methods, router, setAnnouncement]);
+
   return (
-    <motion.div
-      className="w-full h-full p-6 max-h-full flex flex-col gap-6"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-    >
-      {/* HEADER */}
-      <div className="w-full flex items-center justify-between h-fit">
-        {/* BOTÓN IR HACIA ATRÁS */}
-        <BouncingButton
-          action={() => router.push(`/tasks/`)}
-          backgroundColorHover="#ffffff"
-          backgroundColor="#22c55e"
-          textColor="#ffffff"
-          textColorHover="#22c55e"
-          border="2px solid #ffffff"
-          borderHover="2px solid #22c55e"
-          twClassName="w-fit h-fit p-4 rounded-2xl"
-          disabled={false}
-        >
-          <ArrowLeft className="size-5" />
-        </BouncingButton>
-
-        <div className="flex gap-4">
-          <p>
-            Fecha: <span className="text-green-500">{getDate()}</span>
-          </p>
-        </div>
-      </div>
-
-      {/* BODY */}
-      <div className="flex-1 overflow-y-auto flex gap-6 max-h-full">
-        <FormProvider {...methods}>
-          {/* TAREA */}
-          <div className="w-2/3 rounded-2xl border border-neutral-200 flex flex-col min-h-0">
-            {/* HEADER */}
-            <div className="w-full h-fit p-4 shrink-0 border-b border-b-neutral-200">
-              <p className="font-light text-lg">Tarea</p>
-            </div>
-
-            {/* BODY */}
-            <div className="overflow-y-auto flex-1 min-h-0 p-4">
-              {/* TITLE */}
-              <div className="flex flex-col gap-2">
-                <p>Título</p>
-                <Controller
-                  name="title"
-                  control={methods.control}
+    <FormProvider {...methods}>
+      <DinamicInsertUpdateUI
+        backAction={() => router.push(`/tasks/`)}
+        headerRightContent={
+          <div className="flex gap-4">
+            <p>
+              Fecha: <span className="text-green-500">{getDate()}</span>
+            </p>
+          </div>
+        }
+        leftTitle="Datos de la tarea"
+        rightTitle="Guardar"
+        leftContent={
+          loading ? (
+            <BoxSkeleton />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              {/* TASK_ID */}
+              {isUpdate && (
+                <DinamicInputNumber<TaskFormValues>
+                  name="id"
+                  label="ID de tarea"
+                  placeholder="Ingrese el ID de tarea"
+                  min={1}
+                  max={99}
+                  disabled
                   /* rules={{
-                    required: "El título es necesario",
+                    required: "El ID de tarea es necesario",
                   }} */
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <input
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      value={value}
-                      type="text"
-                      id="title"
-                      minLength={2}
-                      maxLength={50}
-                      placeholder="Tarea para..."
-                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-green-100 transition-all duration-300 placeholder:text-neutral-500"
-                    />
-                  )}
                 />
-                {methods.formState.errors.title && (
-                  <p className="text-red-500 text-sm">
-                    {methods.formState.errors.title?.message}
-                  </p>
-                )}
-              </div>
+              )}
+
+              {/* TITLE */}
+              <DinamicInputText<TaskFormValues>
+                name="title"
+                label="Tarea"
+                placeholder="Nombre cool"
+                isTextArea={false}
+                rules={
+                  {
+                    /* required: "El título es necesario",
+                        minLength: {
+                          value: 2,
+                          message:
+                            "El título debe tener al menos 2 caracteres",
+                        },
+                        maxLength: {
+                          value: 50,
+                          message:
+                            "El título no puede tener más de 50 caracteres",
+                        }, */
+                  }
+                }
+              />
 
               {/* DESCRIPTION */}
-              <div className="flex flex-col gap-2 my-4">
-                <p>Descripción</p>
-                <Controller
-                  name="description"
-                  control={methods.control}
-                  /* rules={{
-                    required: "La descripción es necesaria",
-                  }} */
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <textarea
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      value={value}
-                      id="description"
-                      minLength={30}
-                      maxLength={750}
-                      placeholder="Necesito hacer esto... Necesito llevar esto a... Comprar dos docenas de huevos..."
-                      className="w-full text-sm resize-none h-40 px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-green-100 transition-all duration-300 placeholder:text-neutral-500"
-                    />
-                  )}
-                />
-                {methods.formState.errors.description && (
-                  <p className="text-red-500 text-sm">
-                    {methods.formState.errors.description?.message}
-                  </p>
-                )}
-              </div>
+              <DinamicInputText<TaskFormValues>
+                name="description"
+                label="Descripción"
+                placeholder="Necesito hacer esto... Necesito llevar esto a... Comprar dos docenas de huevos..."
+                isTextArea={true}
+                rules={
+                  {
+                    /* required: "El título es necesario",
+                        minLength: {
+                          value: 2,
+                          message:
+                            "La descripción debe tener al menos 2 caracteres",
+                        },
+                        maxLength: {
+                          value: 750,
+                          message:
+                            "La descripción no puede tener más de 750 caracteres",
+                        }, */
+                  }
+                }
+              />
 
               {/* ESTADO */}
               <div className="flex flex-col gap-2 mb-4">
                 <p>Estado</p>
                 <Controller
-                  control={methods.control}
                   name="state"
-                  /* rules={{
-                    required: "La estado es necesario",
-                  }} */
+                  control={methods.control}
                   render={({ field }) => (
                     <Combobox
-                      items={taskCompleted}
+                      items={taskStates}
                       value={field.value}
-                      onValueChange={(value) =>
-                        field.onChange(taskCompleted.find((l) => l === value))
-                      }
+                      onValueChange={field.onChange}
+                      itemToStringValue={(state) => state}
                     >
-                      <ComboboxTrigger
-                        render={
-                          <Button className="w-full hover:hover:bg-green-100 cursor-pointer justify-center font-normal flex items-center bg-white text-black border border-neutral-200 rounded-xl">
-                            <div className="w-full flex justify-start overflow-x-hidden">
-                              <p className="truncate">
-                                <ComboboxValue />
-                              </p>
-
-                              {field.value === "" && (
-                                <p className="truncate text-neutral-500">
-                                  Seleccione un estado
-                                </p>
-                              )}
-                            </div>
-
-                            <ChevronDown className="size-4" />
-                          </Button>
-                        }
+                      <ComboboxInput
+                        placeholder="Seleccionar estado"
+                        className={`outline-none w-full py-4 border font-bold border-neutral-200 rounded-xl transition-all duration-300 ${getTwTextColor(field.value)} ${getTwBgColor(field.value)}`}
                       />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList className={"h-30"}>
-                          {(item) => (
+
+                      <ComboboxContent className="bg-white border border-neutral-200">
+                        <ComboboxEmpty>No se encontraron países</ComboboxEmpty>
+
+                        <ComboboxList>
+                          {(state) => (
                             <ComboboxItem
-                              className={"overflow-x-hidden w-full"}
-                              key={item}
-                              value={item}
+                              key={state}
+                              value={state}
+                              className={"data-highlighted:bg-neutral-200"}
                             >
-                              <div className="w-full">
-                                <p className="truncate">{item}</p>
+                              <div className="flex flex-col">
+                                <span>{state}</span>
                               </div>
                             </ComboboxItem>
                           )}
@@ -246,93 +265,34 @@ export function InsertUpdateTaskContent({
                     </Combobox>
                   )}
                 />
-                {methods.formState.errors.state && (
-                  <p className="text-red-500">
-                    {methods.formState.errors.state.message}
-                  </p>
-                )}
+              </div>
+            </motion.div>
+          )
+        }
+        rightContent={
+          <>
+            {/* ICONO */}
+            <div className="h-full lg:flex items-center justify-center hidden">
+              <div className="w-3/5">
+                <InsertUpdateTaskIcon />
               </div>
             </div>
-          </div>
 
-          {/* PREGUNTAS DE INFORMACIÓN */}
-          <div className="w-1/3 min-w-1/3 flex flex-col justify-between rounded-2xl border border-neutral-200">
-            {/* HEADER */}
-            <div className="w-full h-fit p-4 shrink-0 border-b border-b-neutral-200">
-              <p className="font-light text-lg">Guardar</p>
+            {/* BOTÓN GUARDAR */}
+            <div className="w-full sticky bottom-0 py-4 bg-white">
+              <DinamicBouncingButton
+                action={
+                  saving || loading ? () => {} : methods.handleSubmit(onSubmit)
+                }
+                disabled={saving || loading ? true : false}
+                spin={saving || loading ? true : false}
+                text="Guardar"
+                Icon={Save}
+              />
             </div>
-
-            {/* BODY */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 px-4 pt-4 relative">
-              {/* USER_ID */}
-              <div className="flex flex-col gap-2 h-full">
-                <p>ID de usuario</p>
-                <Controller
-                  name="user_id"
-                  control={methods.control}
-                  /* rules={{ required: "El ID de usuario es necesario" }} */
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <input
-                      onBlur={onBlur}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter no numérico
-                        onChange(val); // Actualiza el estado con solo números
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "e" || e.key === "-" || e.key === "+") {
-                          e.preventDefault(); // Bloquea la entrada de estos caracteres
-                        }
-                      }}
-                      value={value}
-                      type="text" // Cambia a "text" para evitar comportamientos extraños con números
-                      inputMode="numeric" // Ayuda en móviles
-                      pattern="[0-9]*" // Solo números
-                      id="user_id"
-                      placeholder="1"
-                      min={1}
-                      max={99}
-                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-green-100 transition-all duration-300 placeholder:text-neutral-500"
-                    />
-                  )}
-                />
-                {methods.formState.errors.user_id && (
-                  <p className="text-red-500 text-sm">
-                    {methods.formState.errors.user_id.message}
-                  </p>
-                )}
-              </div>
-
-              {/* BOTÓN GUARDAR */}
-              <div className="w-full sticky bottom-0 py-4 bg-white">
-                <BouncingButton
-                  action={saving ? () => {} : methods.handleSubmit(onSubmit)}
-                  backgroundColorHover="#ffffff"
-                  backgroundColor="#22c55e"
-                  textColor="#ffffff"
-                  textColorHover="#22c55e"
-                  border="2px solid #ffffff"
-                  borderHover="2px solid #22c55e"
-                  twClassName="w-full h-fit px-4 py-2 rounded-2xl"
-                  disabled={saving ? true : false}
-                >
-                  {saving ? (
-                    <>
-                      <span className="text-transparent">E</span>
-                      <Loader className="size-4 animate-spin" />
-                      <span className="text-transparent">E</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="size-4" />
-                      <span>Guardar</span>
-                    </>
-                  )}
-                </BouncingButton>
-              </div>
-            </div>
-          </div>
-        </FormProvider>
-      </div>
-    </motion.div>
+          </>
+        }
+      />
+    </FormProvider>
   );
 }

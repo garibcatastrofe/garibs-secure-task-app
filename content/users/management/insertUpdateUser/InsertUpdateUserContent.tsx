@@ -5,9 +5,10 @@ import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
 import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
 import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
 import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
+import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
 
 /* HOOKS */
-import { useForm, Controller, FormProvider } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useState, useEffect } from "react";
 
 /* ICONS */
@@ -129,7 +130,7 @@ export function InsertUpdateUserContent({
     } catch (error) {
       console.log("Error", error);
     }
-  }, []);
+  }, [id, isUpdate, methods, router, setAnnouncement]);
 
   return (
     <FormProvider {...methods}>
@@ -155,43 +156,17 @@ export function InsertUpdateUserContent({
             >
               {/* USER_ID */}
               {isUpdate && (
-                <div className="flex flex-col gap-2 mb-4">
-                  <p>ID de usuario</p>
-                  <Controller
-                    name="id"
-                    control={methods.control}
-                    /* rules={{ required: "El ID de usuario es necesario" }} */
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <input
-                        onBlur={onBlur}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter no numérico
-                          onChange(val); // Actualiza el estado con solo números
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "e" || e.key === "-" || e.key === "+") {
-                            e.preventDefault(); // Bloquea la entrada de estos caracteres
-                          }
-                        }}
-                        value={value}
-                        type="text" // Cambia a "text" para evitar comportamientos extraños con números
-                        inputMode="numeric" // Ayuda en móviles
-                        pattern="[0-9]*" // Solo números
-                        id="id"
-                        placeholder="1"
-                        min={1}
-                        max={99}
-                        disabled
-                        className="w-full text-sm h-fit px-4 py-2 bg-neutral-100 outline-none border border-neutral-200 pointer-events-none rounded-xl transition-all duration-300 placeholder:text-neutral-500 text-neutral-400"
-                      />
-                    )}
-                  />
-                  {methods.formState.errors.id && (
-                    <p className="text-red-500 text-sm">
-                      {methods.formState.errors.id.message}
-                    </p>
-                  )}
-                </div>
+                <DinamicInputNumber<UserFormValues>
+                  name="id"
+                  label="ID de usuario"
+                  placeholder="Ingrese el ID de usuario"
+                  min={1}
+                  max={99}
+                  disabled
+                  rules={{
+                    required: "El ID de usuario es necesario",
+                  }}
+                />
               )}
 
               {/* USER_NAME */}
@@ -199,6 +174,7 @@ export function InsertUpdateUserContent({
                 name="user_name"
                 label="Nombre de usuario"
                 placeholder="Nombre cool"
+                isTextArea={false}
                 rules={
                   {
                     /* required: "El nombre de usuario es necesario",
@@ -221,6 +197,7 @@ export function InsertUpdateUserContent({
                 name="email"
                 label="Correo"
                 placeholder="example@something.com"
+                isTextArea={false}
                 rules={
                   {
                     /* required: "El correo es necesario",
@@ -244,6 +221,7 @@ export function InsertUpdateUserContent({
                 label="Contraseña"
                 type="password"
                 placeholder="********"
+                isTextArea={false}
                 rules={
                   {
                     /* minLength: {
@@ -264,6 +242,7 @@ export function InsertUpdateUserContent({
                 label="Confirmar contraseña"
                 type="password"
                 placeholder="********"
+                isTextArea={false}
                 rules={
                   {
                     /*   minLength: {

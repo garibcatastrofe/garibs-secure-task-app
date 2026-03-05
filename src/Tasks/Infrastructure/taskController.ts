@@ -170,3 +170,43 @@ export async function deleteTask(formData: FormData): Promise<{
     };
   }
 }
+
+export async function selectTaskById(
+  id: number,
+): Promise<{ ok: boolean; message: string; task: ITaskPrimitive }> {
+  // Simular delay del backend
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  try {
+    console.log({
+      id,
+    });
+
+    return {
+      ok: true,
+      message: "Tarea encontrado correctamente",
+      task: {
+        id: 1,
+        title: "Tarea 1",
+        description:
+          "Esta es la primera tarea en la que tengo que ordenar todas las cosas de mi cuarto!!!!",
+        created_date: "2026-02-17 10:45:00",
+        state: "COMPLETADA",
+        user_id: 1,
+      },
+    };
+  } catch {
+    return {
+      ok: false,
+      message: "Ocurrió un al encontrar el usuario",
+      task: {
+        id: 0,
+        title: "",
+        description: "",
+        created_date: "",
+        state: "",
+        user_id: 0,
+      },
+    };
+  }
+}
