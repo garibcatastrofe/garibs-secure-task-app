@@ -26,14 +26,14 @@ export function DinamicTableFooter({
       <div className="flex gap-2 items-center">
         <p>Total:</p>
         {loading ? (
-          <Loader className="size-4 animate-spin text-[#00A0D0]" />
+          <Loader className="size-4 animate-spin text-green-500" />
         ) : (
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
-            <span className="text-[#00A0D0] font-semibold mr-2">{count}</span>
+            <span className="text-green-500 font-semibold mr-2">{count}</span>
             <span>{type}</span>
             <span>{count >= 1 && "s"}</span>
           </motion.p>
@@ -57,11 +57,11 @@ export function DinamicTableFooter({
         <BouncingButton
           action={() => {}}
           backgroundColorHover="#ffffff"
-          backgroundColor="#00A0D0"
+          backgroundColor="#22c55e"
           textColor="#ffffff"
-          textColorHover="#00A0D0"
+          textColorHover="#22c55e"
           border="2px solid #ffffff"
-          borderHover="2px solid #00A0D0"
+          borderHover="2px solid #22c55e"
           twClassName="w-fit h-fit px-4 py-2 rounded-xl"
           disabled={false}
         >
@@ -72,7 +72,7 @@ export function DinamicTableFooter({
       <div className="flex items-center gap-2">
         <p>Página:</p>
         {loading ? (
-          <Loader className="size-4 animate-spin text-[#00A0D0]" />
+          <Loader className="size-4 animate-spin text-green-500" />
         ) : (
           <motion.p
             initial={{ opacity: 0 }}
@@ -84,7 +84,7 @@ export function DinamicTableFooter({
         )}
         <p>de</p>
         {loading ? (
-          <Loader className="size-4 animate-spin text-[#00A0D0]" />
+          <Loader className="size-4 animate-spin text-green-500" />
         ) : (
           <motion.p
             initial={{ opacity: 0 }}

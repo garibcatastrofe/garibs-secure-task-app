@@ -19,7 +19,7 @@ export function Modal() {
     >
       {/* Modal Blanco con animación de rebote */}
       <motion.div
-        className="z-70 p-4 bg-white rounded-lg shadow-lg lg:w-150 md:w-125 w-[calc(100%-2rem)]"
+        className="z-70  bg-white rounded-lg shadow-lg lg:w-150 md:w-125 w-[calc(100%-2rem)]"
         initial={{ opacity: 0, y: 30 }} // Comienza un poco abajo
         animate={{
           opacity: isActivated ? 1 : 0,
@@ -38,14 +38,14 @@ export function Modal() {
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2 px-6 pt-6 pb-2">
           <h2 className="text-xl font-medium">{modalTitle}</h2>
           <X
             onClick={hacerModalFalso}
-            className="size-4 text-gray-600 transition duration-200 cursor-pointer hover:text-[#00A0D0]"
+            className="size-4 text-gray-600 transition duration-200 cursor-pointer hover:text-green-500"
           />
         </div>
-        <div className="p-2 overflow-y-auto scrollbar-custom">{modalBody}</div>
+        <div className="px-6 pb-6 overflow-y-auto scrollbar-custom">{modalBody}</div>
       </motion.div>
 
       {/* Fondo negro con animación */}

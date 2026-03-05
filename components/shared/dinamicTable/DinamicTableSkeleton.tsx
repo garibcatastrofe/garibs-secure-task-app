@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 
 export function DinamicTableSkeleton() {
   const rowCount = 4;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}

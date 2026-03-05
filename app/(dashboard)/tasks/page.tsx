@@ -1,11 +1,5 @@
-import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
+import { SelectTasksContent } from "@/content/tasks/management/selectTasks/SelectTasksContent";
 
 export default function TasksPage() {
-  return (
-    <SectionContainer>
-      <div className="flex flex-col h-full p-4">
-        <p>Esta es la página de Tareas</p>
-      </div>
-    </SectionContainer>
-  );
+  return <SelectTasksContent />;
 }
