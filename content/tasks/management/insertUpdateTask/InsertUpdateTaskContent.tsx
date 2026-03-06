@@ -48,7 +48,7 @@ import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicI
 import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
 import { InsertUpdateTaskIcon } from "@/components/svg/tasks/InsertUpdateTaskIcon";
 import { getTwTextColor } from "@/utils/getTwTextColor";
-import { getTwBgColor } from '@/utils/getTwBgColor'
+import { getTwBgColor } from "@/utils/getTwBgColor";
 
 export function InsertUpdateTaskContent({
   isUpdate,
@@ -181,15 +181,16 @@ export function InsertUpdateTaskContent({
                 />
               )}
 
-              {/* TITLE */}
-              <DinamicInputText<TaskFormValues>
-                name="title"
-                label="Tarea"
-                placeholder="Nombre cool"
-                isTextArea={false}
-                rules={
-                  {
-                    /* required: "El título es necesario",
+              <div className="grid grid-cols-2 gap-4 w-full h-fit">
+                {/* TITLE */}
+                <DinamicInputText<TaskFormValues>
+                  name="title"
+                  label="Tarea"
+                  placeholder="Nombre cool"
+                  isTextArea={false}
+                  rules={
+                    {
+                      /* required: "El título es necesario",
                         minLength: {
                           value: 2,
                           message:
@@ -200,9 +201,52 @@ export function InsertUpdateTaskContent({
                           message:
                             "El título no puede tener más de 50 caracteres",
                         }, */
+                    }
                   }
-                }
-              />
+                />
+
+                {/* ESTADO */}
+                <div className="flex flex-col gap-2 mb-4">
+                  <p>Estado</p>
+                  <Controller
+                    name="state"
+                    control={methods.control}
+                    render={({ field }) => (
+                      <Combobox
+                        items={taskStates}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        itemToStringValue={(state) => state}
+                      >
+                        <ComboboxInput
+                          placeholder="Seleccionar estado"
+                          className={`outline-none w-full py-4 border font-bold border-neutral-200 rounded-xl transition-all duration-300 ${getTwTextColor(field.value)}`}
+                        />
+
+                        <ComboboxContent className="bg-white border border-neutral-200">
+                          <ComboboxEmpty>
+                            No se encontraron países
+                          </ComboboxEmpty>
+
+                          <ComboboxList>
+                            {(state) => (
+                              <ComboboxItem
+                                key={state}
+                                value={state}
+                                className={"data-highlighted:bg-neutral-200"}
+                              >
+                                <div className="flex flex-col">
+                                  <span>{state}</span>
+                                </div>
+                              </ComboboxItem>
+                            )}
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
+                    )}
+                  />
+                </div>
+              </div>
 
               {/* DESCRIPTION */}
               <DinamicInputText<TaskFormValues>
@@ -226,46 +270,6 @@ export function InsertUpdateTaskContent({
                   }
                 }
               />
-
-              {/* ESTADO */}
-              <div className="flex flex-col gap-2 mb-4">
-                <p>Estado</p>
-                <Controller
-                  name="state"
-                  control={methods.control}
-                  render={({ field }) => (
-                    <Combobox
-                      items={taskStates}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      itemToStringValue={(state) => state}
-                    >
-                      <ComboboxInput
-                        placeholder="Seleccionar estado"
-                        className={`outline-none w-full py-4 border font-bold border-neutral-200 rounded-xl transition-all duration-300 ${getTwTextColor(field.value)} ${getTwBgColor(field.value)}`}
-                      />
-
-                      <ComboboxContent className="bg-white border border-neutral-200">
-                        <ComboboxEmpty>No se encontraron países</ComboboxEmpty>
-
-                        <ComboboxList>
-                          {(state) => (
-                            <ComboboxItem
-                              key={state}
-                              value={state}
-                              className={"data-highlighted:bg-neutral-200"}
-                            >
-                              <div className="flex flex-col">
-                                <span>{state}</span>
-                              </div>
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                  )}
-                />
-              </div>
             </motion.div>
           )
         }
