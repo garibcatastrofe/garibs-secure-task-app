@@ -3,9 +3,10 @@
 /* COMPONENTS */
 import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
 import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
+
 import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
-import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
 import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
+import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
 
 /* HOOKS */
 import { useForm, FormProvider } from "react-hook-form";
@@ -174,10 +175,8 @@ export function InsertUpdateUserContent({
                 name="user_name"
                 label="Nombre de usuario"
                 placeholder="Nombre cool"
-                isTextArea={false}
-                rules={
-                  {
-                    /* required: "El nombre de usuario es necesario",
+                rules={{
+                  required: "El nombre de usuario es necesario",
                   minLength: {
                     value: 2,
                     message:
@@ -187,9 +186,8 @@ export function InsertUpdateUserContent({
                     value: 50,
                     message:
                       "El nombre de usuario no puede tener más de 50 caracteres",
-                  }, */
-                  }
-                }
+                  },
+                }}
               />
 
               {/* CORREO */}
@@ -197,22 +195,17 @@ export function InsertUpdateUserContent({
                 name="email"
                 label="Correo"
                 placeholder="example@something.com"
-                isTextArea={false}
-                rules={
-                  {
-                    /* required: "El correo es necesario",
+                rules={{
+                  required: "El correo es necesario",
                   minLength: {
                     value: 2,
-                    message:
-                      "El correo debe tener al menos 2 caracteres",
+                    message: "El correo debe tener al menos 2 caracteres",
                   },
                   maxLength: {
                     value: 50,
-                    message:
-                      "El correo no puede tener más de 50 caracteres",
-                  }, */
-                  }
-                }
+                    message: "El correo no puede tener más de 50 caracteres",
+                  },
+                }}
               />
 
               {/* PASSWORD */}
@@ -221,19 +214,17 @@ export function InsertUpdateUserContent({
                 label="Contraseña"
                 type="password"
                 placeholder="********"
-                isTextArea={false}
-                rules={
-                  {
-                    /* minLength: {
+                rules={{
+                  minLength: {
                     value: 2,
                     message: "La contraseña debe tener al menos 2 caracteres",
                   },
                   maxLength: {
                     value: 50,
-                    message: "La contraseña no puede tener más de 50 caracteres",
-                  }, */
-                  }
-                }
+                    message:
+                      "La contraseña no puede tener más de 50 caracteres",
+                  },
+                }}
               />
 
               {/* PASSWORD_CONFIRM */}
@@ -242,19 +233,18 @@ export function InsertUpdateUserContent({
                 label="Confirmar contraseña"
                 type="password"
                 placeholder="********"
-                isTextArea={false}
-                rules={
-                  {
-                    /*   minLength: {
+                rules={{
+                  minLength: {
                     value: 2,
-                    message: "La contraseña confirmada debe tener al menos 2 caracteres",
+                    message:
+                      "La contraseña confirmada debe tener al menos 2 caracteres",
                   },
                   maxLength: {
                     value: 50,
-                    message: "La contraseña confirmada no puede tener más de 50 caracteres",
-                  }, */
-                  }
-                }
+                    message:
+                      "La contraseña confirmada no puede tener más de 50 caracteres",
+                  },
+                }}
               />
             </motion.div>
           )

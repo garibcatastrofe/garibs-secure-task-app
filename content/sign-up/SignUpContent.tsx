@@ -82,22 +82,19 @@ export function SignUpContent() {
             name="user_name"
             label="Nombre de usuario"
             placeholder="Nombre cool"
-            isTextArea={false}
-            rules={
-              {
-                /* required: "El nombre de usuario es necesario",
-                              minLength: {
-                                value: 2,
-                                message:
-                                  "El nombre de usuario debe tener al menos 2 caracteres",
-                              },
-                              maxLength: {
-                                value: 50,
-                                message:
-                                  "El nombre de usuario no puede tener más de 50 caracteres",
-                              }, */
-              }
-            }
+            rules={{
+              required: "El nombre de usuario es necesario",
+              minLength: {
+                value: 2,
+                message:
+                  "El nombre de usuario debe tener al menos 2 caracteres",
+              },
+              maxLength: {
+                value: 50,
+                message:
+                  "El nombre de usuario no puede tener más de 50 caracteres",
+              },
+            }}
           />
 
           {/* CORREO */}
@@ -105,22 +102,17 @@ export function SignUpContent() {
             name="email"
             label="Correo"
             placeholder="example@something.com"
-            isTextArea={false}
-            rules={
-              {
-                /* required: "El correo es necesario",
-                              minLength: {
-                                value: 2,
-                                message:
-                                  "El correo debe tener al menos 2 caracteres",
-                              },
-                              maxLength: {
-                                value: 50,
-                                message:
-                                  "El correo no puede tener más de 50 caracteres",
-                              }, */
-              }
-            }
+            rules={{
+              required: "El correo es necesario",
+              minLength: {
+                value: 2,
+                message: "El correo debe tener al menos 2 caracteres",
+              },
+              maxLength: {
+                value: 50,
+                message: "El correo no puede tener más de 50 caracteres",
+              },
+            }}
           />
 
           {/* PASSWORD */}
@@ -129,19 +121,16 @@ export function SignUpContent() {
             label="Contraseña"
             type="password"
             placeholder="********"
-            isTextArea={false}
-            rules={
-              {
-                /* minLength: {
-                                value: 2,
-                                message: "La contraseña debe tener al menos 2 caracteres",
-                              },
-                              maxLength: {
-                                value: 50,
-                                message: "La contraseña no puede tener más de 50 caracteres",
-                              }, */
-              }
-            }
+            rules={{
+              minLength: {
+                value: 2,
+                message: "La contraseña debe tener al menos 2 caracteres",
+              },
+              maxLength: {
+                value: 50,
+                message: "La contraseña no puede tener más de 50 caracteres",
+              },
+            }}
           />
 
           {/* PASSWORD_CONFIRM */}
@@ -150,21 +139,21 @@ export function SignUpContent() {
             label="Confirmar contraseña"
             type="password"
             placeholder="********"
-            isTextArea={false}
-            rules={
-              {
-                /*   minLength: {
-                              value: 2,
-                              message: "La contraseña confirmada debe tener al menos 2 caracteres",
-                            },
-                            maxLength: {
-                              value: 50,
-                              message: "La contraseña confirmada no puede tener más de 50 caracteres",
-                            }, */
-              }
-            }
+            rules={{
+              minLength: {
+                value: 2,
+                message:
+                  "La contraseña confirmada debe tener al menos 2 caracteres",
+              },
+              maxLength: {
+                value: 50,
+                message:
+                  "La contraseña confirmada no puede tener más de 50 caracteres",
+              },
+            }}
           />
 
+          {/* BOTÓN REGISTRARSE */}
           <DinamicBouncingButton
             action={methods.handleSubmit(onSubmit)}
             disabled={saving ? true : false}

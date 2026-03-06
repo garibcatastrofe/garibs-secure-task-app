@@ -1,24 +1,24 @@
 "use client";
 
 /* COMPONENTS */
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
+import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
+import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
+
+import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
+import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
+import { DinamicInputTextArea } from "@/components/shared/form/dinamicInput/DinamicInputTextArea";
+import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
 
 /* DATA */
 import { taskStates } from "@/content/tasks/data/comboboxItems/comboboxItems";
 
 /* HOOKS */
-import { useForm, Controller, FormProvider } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useState, useEffect } from "react";
 
 /* ICONS */
 import { Save } from "lucide-react";
+import { InsertUpdateTaskIcon } from "@/components/svg/tasks/InsertUpdateTaskIcon";
 
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
@@ -41,14 +41,9 @@ import { getDate } from "@/utils/date";
 
 /* LIBS */
 import { motion } from "framer-motion";
-import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
-import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
-import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
-import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
-import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
-import { InsertUpdateTaskIcon } from "@/components/svg/tasks/InsertUpdateTaskIcon";
+
 import { getTwTextColor } from "@/utils/getTwTextColor";
-import { getTwBgColor } from "@/utils/getTwBgColor";
+import { DinamicCombobox } from "@/components/shared/form/dinamicInput/DinamicCombobox";
 
 export function InsertUpdateTaskContent({
   isUpdate,
@@ -175,9 +170,9 @@ export function InsertUpdateTaskContent({
                   min={1}
                   max={99}
                   disabled
-                  /* rules={{
+                  rules={{
                     required: "El ID de tarea es necesario",
-                  }} */
+                  }}
                 />
               )}
 
@@ -187,88 +182,49 @@ export function InsertUpdateTaskContent({
                   name="title"
                   label="Tarea"
                   placeholder="Nombre cool"
-                  isTextArea={false}
-                  rules={
-                    {
-                      /* required: "El título es necesario",
-                        minLength: {
-                          value: 2,
-                          message:
-                            "El título debe tener al menos 2 caracteres",
-                        },
-                        maxLength: {
-                          value: 50,
-                          message:
-                            "El título no puede tener más de 50 caracteres",
-                        }, */
-                    }
-                  }
+                  rules={{
+                    required: "El título es necesario",
+                    minLength: {
+                      value: 2,
+                      message: "El título debe tener al menos 2 caracteres",
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: "El título no puede tener más de 50 caracteres",
+                    },
+                  }}
                 />
 
                 {/* ESTADO */}
-                <div className="flex flex-col gap-2 mb-4">
-                  <p>Estado</p>
-                  <Controller
-                    name="state"
-                    control={methods.control}
-                    render={({ field }) => (
-                      <Combobox
-                        items={taskStates}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        itemToStringValue={(state) => state}
-                      >
-                        <ComboboxInput
-                          placeholder="Seleccionar estado"
-                          className={`outline-none w-full py-4 border font-bold border-neutral-200 rounded-xl transition-all duration-300 ${getTwTextColor(field.value)}`}
-                        />
-
-                        <ComboboxContent className="bg-white border border-neutral-200">
-                          <ComboboxEmpty>
-                            No se encontraron países
-                          </ComboboxEmpty>
-
-                          <ComboboxList>
-                            {(state) => (
-                              <ComboboxItem
-                                key={state}
-                                value={state}
-                                className={"data-highlighted:bg-neutral-200"}
-                              >
-                                <div className="flex flex-col">
-                                  <span>{state}</span>
-                                </div>
-                              </ComboboxItem>
-                            )}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
-                    )}
-                  />
-                </div>
+                <DinamicCombobox<TaskFormValues>
+                  name="state"
+                  label="Estado"
+                  items={taskStates}
+                  placeholder="Seleccionar estado"
+                  rules={{
+                    required: "El estado es necesario",
+                  }}
+                  getTextColor={getTwTextColor}
+                />
               </div>
 
               {/* DESCRIPTION */}
-              <DinamicInputText<TaskFormValues>
+              <DinamicInputTextArea<TaskFormValues>
                 name="description"
                 label="Descripción"
                 placeholder="Necesito hacer esto... Necesito llevar esto a... Comprar dos docenas de huevos..."
-                isTextArea={true}
-                rules={
-                  {
-                    /* required: "El título es necesario",
-                        minLength: {
-                          value: 2,
-                          message:
-                            "La descripción debe tener al menos 2 caracteres",
-                        },
-                        maxLength: {
-                          value: 750,
-                          message:
-                            "La descripción no puede tener más de 750 caracteres",
-                        }, */
-                  }
-                }
+                rules={{
+                  required: "El título es necesario",
+                  minLength: {
+                    value: 2,
+                    message: "La descripción debe tener al menos 2 caracteres",
+                  },
+                  maxLength: {
+                    value: 750,
+                    message:
+                      "La descripción no puede tener más de 750 caracteres",
+                  },
+                }}
               />
             </motion.div>
           )
