@@ -48,7 +48,6 @@ export function Announcement() {
         )}
         <p className="text-white">{message}</p>
       </div>
-      {isOk ? <div></div> : <div></div>}
     </motion.div>
   );
 }
