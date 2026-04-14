@@ -28,38 +28,41 @@ import { selectTasks } from "@/src/Tasks/Infrastructure/taskController";
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
+/* UTILS */
+import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
+
 export function SelectTasksContent() {
   const router = useRouter();
   const { setAnnouncement } = useAnnouncement();
 
   const [tasks, setTasks] = useState<ISelectTasksData>({ data: [], count: 0 });
   const [loading, setLoading] = useState(true);
-  const type = "tarea";
-
-  const getTwBgColor = ({ index }: { index: number }) => {
-    return index % 2 ? "bg-neutral-100" : "bg-white";
-  };
+  const [irSiguiente, setIrSiguiente] = useState(false);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      const response = await selectTasks({
-        page: 0,
-        perPage: 10,
-        order: "asc",
-        orderBy: "id",
-        filters: [],
-      });
+    try {
+      const fetchTasks = async () => {
+        const response = await selectTasks({
+          page: 0,
+          perPage: 10,
+          order: "asc",
+          orderBy: "id",
+          filters: [],
+        });
 
-      if (response.ok) {
-        setTasks(response);
-      } else {
-        setAnnouncement(true, false, response.message);
-      }
+        if (response.ok) {
+          setTasks(response);
+        } else {
+          setAnnouncement(true, false, response.message);
+        }
 
-      setLoading(false);
-    };
+        setLoading(false);
+      };
 
-    fetchTasks();
+      fetchTasks();
+    } catch (error) {
+      console.log("Error: ", error);
+    } 
   }, [setAnnouncement]);
 
   return (
@@ -69,16 +72,19 @@ export function SelectTasksContent() {
           <DinamicTh key={index} column={column} />
         ))}
         tbodyRows={tasks.data.map((task, index) => (
-          <DinamicRow key={index} twBgColor={getTwBgColor({ index: index })}>
+          <DinamicRow
+            key={index}
+            twBgColor={getTwBgColorTable({ index: index })}
+          >
             <TaskRowContent
               task={task}
-              twBgColor={`${getTwBgColor({ index: index })}`}
+              twBgColor={`${getTwBgColorTable({ index: index })}`}
             />
           </DinamicRow>
         ))}
         loading={loading}
         count={tasks.count}
-        type={type}
+        type={"tarea"}
         backAction={() => router.push("/home")}
         filterAction={() => {}}
         addAction={() => router.push(`/tasks/add`)}

@@ -1,5 +1,12 @@
 "use client";
 
+/* API CALLS */
+import {
+  insertUser,
+  selectUserById,
+  updateUser,
+} from "@/src/Users/Infrastructure/UserController";
+
 /* COMPONENTS */
 import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
 import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
@@ -18,13 +25,6 @@ import { InsertUpdateUserIcon } from "@/components/svg/users/InsertUpdateUserIco
 
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
-
-/* SERVER ACTION */
-import {
-  insertUser,
-  selectUserById,
-  updateUser,
-} from "@/src/Users/Infrastructure/userController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -64,24 +64,41 @@ export function InsertUpdateUserContent({
       formData.append("email", data.email);
       formData.append("password", data.password);
       formData.append("password_confirm", data.password_confirm);
+      formData.append("is_admin", "NO");
 
       if (isUpdate) {
         const response = await updateUser(formData);
 
         if (response.ok) {
-          setAnnouncement(true, true, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: true,
+            message: response.message,
+          });
         } else {
-          setAnnouncement(true, false, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
         }
       } else {
         const response = await insertUser(formData);
 
         if (response.ok) {
-          setAnnouncement(true, true, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: true,
+            message: response.message,
+          });
 
-          //methods.reset();
+          methods.reset();
         } else {
-          setAnnouncement(true, false, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
         }
       }
 
@@ -111,7 +128,11 @@ export function InsertUpdateUserContent({
             });
             endLoading();
           } else {
-            setAnnouncement(true, false, response.message);
+            setAnnouncement({
+              isActivated: true,
+              isOk: false,
+              message: response.message,
+            });
 
             router.push("/users");
           }

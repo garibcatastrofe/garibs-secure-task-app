@@ -49,14 +49,16 @@ export function UserRowContent({
           </BouncingButton>
           <BouncingButton
             action={() =>
-              setModal(
-                true,
-                "Eliminar tarea",
-                <DeleteUserContent
-                  user_id={user.id ?? 0}
-                  user_name={user.user_name}
-                />,
-              )
+              setModal({
+                isActivated: true,
+                title: "Eliminar usuario",
+                body: (
+                  <DeleteUserContent
+                    user_id={user.id ?? 0}
+                    user_name={user.user_name}
+                  />
+                ),
+              })
             }
             backgroundColorHover="#ffffff"
             backgroundColor="#ef4444"

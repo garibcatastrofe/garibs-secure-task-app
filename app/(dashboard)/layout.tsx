@@ -16,7 +16,7 @@ export default function DashboardLayout({
 
   return (
     <motion.div
-      className="flex min-h-dvh overflow-y-hidden"
+      className="flex min-h-dvh overflow-y-hidden overflow-x-hidden"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}

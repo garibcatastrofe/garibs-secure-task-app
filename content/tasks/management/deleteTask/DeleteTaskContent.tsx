@@ -1,5 +1,6 @@
 "use client";
 
+/* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 
 /* HOOKS */
@@ -19,7 +20,7 @@ export function DeleteTaskContent({
 }) {
   const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
-  const { modalBody, modalTitle, setModal } = useModal();
+  const { modal, setModal } = useModal();
 
   const methods = useForm<{ id: number }>({
     defaultValues: {
@@ -38,10 +39,22 @@ export function DeleteTaskContent({
       const response = await deleteTask(formData);
 
       if (response.ok) {
-        setAnnouncement(true, true, response.message);
-        setModal(false, modalTitle ?? "", modalBody);
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: response.message,
+        });
+        setModal({
+          isActivated: false,
+          title: modal.title ?? "",
+          body: modal.body,
+        });
       } else {
-        setAnnouncement(true, false, response.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
       }
 
       setDeleting(false);
@@ -71,7 +84,11 @@ export function DeleteTaskContent({
                   deleting
                     ? () => {}
                     : () => {
-                        setModal(false, modalTitle ?? "", modalBody);
+                        setModal({
+                          isActivated: false,
+                          title: modal.title ?? "",
+                          body: modal.body,
+                        });
                       }
                 }
                 backgroundColorHover="#22c55e"

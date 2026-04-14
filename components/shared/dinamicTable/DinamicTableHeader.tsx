@@ -1,21 +1,26 @@
 "use client";
 
-import { SlidersHorizontal, Plus, Download } from "lucide-react";
+/* COMPONENTS */
 import { BouncingButton } from "../bouncingButton/BouncingButton";
+
+/* ICONS */
+import { SlidersHorizontal, Plus } from "lucide-react";
+
+/* LIBS */
 import { motion } from "framer-motion";
 
 export function DinamicTableHeader({
   backAction,
   filterAction,
   addAction,
-  excelAction,
-  backContent
+  excelButtonContent,
+  backContent,
 }: {
   backAction: () => void;
   filterAction: () => void;
   addAction: () => void;
-  excelAction: () => void;
-  backContent: React.ReactNode
+  excelButtonContent: React.ReactNode;
+  backContent: React.ReactNode;
 }) {
   return (
     <motion.div
@@ -73,19 +78,7 @@ export function DinamicTableHeader({
         </BouncingButton>
 
         {/* BOTÓN EXPORTAR EXCEL */}
-        <BouncingButton
-          action={excelAction}
-          backgroundColorHover="#ffffff"
-          backgroundColor="#22c55e"
-          textColor="#ffffff"
-          textColorHover="#22c55e"
-          border="2px solid #ffffff"
-          borderHover="2px solid #22c55e"
-          twClassName="w-fit h-fit p-4 rounded-2xl"
-          disabled={false}
-        >
-          <Download className="size-5" />
-        </BouncingButton>
+        {excelButtonContent}
       </div>
     </motion.div>
   );

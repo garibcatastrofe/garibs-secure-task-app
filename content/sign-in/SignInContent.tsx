@@ -1,5 +1,8 @@
 "use client";
 
+/* API CALLS */
+import { signIn } from "@/src/Users/Infrastructure/UserController";
+
 /* COMPONENTS */
 import { LoginUI } from "@/components/shared/loginUI/LoginUI";
 import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
@@ -15,9 +18,6 @@ import { Rocket } from "lucide-react";
 
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
-
-/* SERVER ACTIONS */
-import { signIn } from "@/src/Users/Infrastructure/userController";
 
 /* TYPES */
 import { SignInForm } from "./types/SignInForm";
@@ -49,13 +49,20 @@ export function SignInContent() {
       const response = await signIn(formData);
 
       if (response.ok) {
-        setAnnouncement(true, true, response.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: response.message,
+        });
         console.log(data);
 
-        /* methods.reset(); */
         router.push("/home");
       } else {
-        setAnnouncement(true, false, response.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
       }
 
       setSaving(false);

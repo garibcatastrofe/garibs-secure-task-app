@@ -1,7 +1,7 @@
 "use server";
 
 /* TYPES */
-import { IQuery } from "@/src/Shared/Domain/Interfaces/IQuery";
+import { IQuery } from "@/src/Shared/Domain/Interfaces/IQueryGeneral";
 import { ITaskPrimitive } from "@/src/Tasks/Domain/Interfaces/ITaskPrimitive";
 import { ISelectTasksResponse } from "../Domain/Interfaces/ISelectTasksResponse";
 
