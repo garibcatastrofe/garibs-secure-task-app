@@ -20,7 +20,7 @@ export function PresentationContent() {
       <Announcement />
       <SectionContainer>
         <div className="flex-1 h-dvh flex justify-center items-center gap-4">
-          <div className="w-1/3 h-fit flex flex-col">
+          <div className="lg:w-1/3 w-full h-fit flex flex-col mx-4 lg:mx-0">
             <div className="w-1/2 mb-6">
               <AppIcon />
             </div>
@@ -58,7 +58,7 @@ export function PresentationContent() {
               </BouncingButton>
             </div>
           </div>
-          <div className="h-2/5">
+          <div className="h-2/5 hidden lg:block">
             <HomeIcon />
           </div>
         </div>
