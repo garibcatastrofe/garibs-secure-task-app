@@ -7,10 +7,11 @@ import { signIn, verify } from "@/src/Users/Infrastructure/UserController";
 import { LoginUI } from "@/components/shared/loginUI/LoginUI";
 import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
 import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
+import { Announcement } from "@/components/shared/announcement/Announcement";
 
 /* HOOKS */
 import { useForm, FormProvider } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /* ICONS */
 import { EntranceIcon } from "@/components/svg/sign-up/EntranceIcon";
@@ -61,22 +62,18 @@ export function SignInContent() {
           setAnnouncement({
             isActivated: true,
             isOk: true,
-            message: response.message,
+            message: verifyResponse.message,
           });
 
           router.push("/home");
         } else {
-          setUser({ user: null });
-
           setAnnouncement({
             isActivated: true,
             isOk: false,
-            message: response.message,
+            message: verifyResponse.message,
           });
         }
       } else {
-        setUser({ user: null });
-
         setAnnouncement({
           isActivated: true,
           isOk: false,
@@ -87,64 +84,89 @@ export function SignInContent() {
       setSaving(false);
     } catch (error) {
       console.log("Error", error);
+
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message: "Ocurrió un error al ingresar, intente nuevamente más tarde",
+      });
     }
   };
 
+  useEffect(() => {
+    try {
+      const checkVerify = async () => {
+        const response = await verify();
+
+        if (response.ok) {
+          router.push("/home");
+        }
+      };
+
+      checkVerify();
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  }, [router]);
+
   return (
-    <LoginUI
-      leftIcon={<EntranceIcon />}
-      title="Ingresar"
-      question="¿No tienes cuenta?"
-      questionLinkTo="/sign-up"
-      questionLinkToLabel="Registrarse"
-      body={
-        <FormProvider {...methods}>
-          {/* CORREO */}
-          <DinamicInputText<SignInForm>
-            name="email"
-            label="Correo"
-            placeholder="example@something.com"
-            rules={{
-              required: "El correo es necesario",
-              minLength: {
-                value: 2,
-                message: "El correo debe tener al menos 2 caracteres",
-              },
-              maxLength: {
-                value: 50,
-                message: "El correo no puede tener más de 50 caracteres",
-              },
-            }}
-          />
+    <>
+      <Announcement />
+      <LoginUI
+        leftIcon={<EntranceIcon />}
+        title="Ingresar"
+        question="¿No tienes cuenta?"
+        questionLinkTo="/sign-up"
+        questionLinkToLabel="Registrarse"
+        body={
+          <FormProvider {...methods}>
+            {/* CORREO */}
+            <DinamicInputText<SignInForm>
+              name="email"
+              label="Correo"
+              placeholder="example@something.com"
+              rules={{
+                required: "El correo es necesario",
+                minLength: {
+                  value: 2,
+                  message: "El correo debe tener al menos 2 caracteres",
+                },
+                maxLength: {
+                  value: 50,
+                  message: "El correo no puede tener más de 50 caracteres",
+                },
+              }}
+            />
 
-          {/* PASSWORD */}
-          <DinamicInputText<SignInForm>
-            name="password"
-            label="Contraseña"
-            type="password"
-            placeholder="********"
-            rules={{
-              minLength: {
-                value: 2,
-                message: "La contraseña debe tener al menos 2 caracteres",
-              },
-              maxLength: {
-                value: 50,
-                message: "La contraseña no puede tener más de 50 caracteres",
-              },
-            }}
-          />
+            {/* PASSWORD */}
+            <DinamicInputText<SignInForm>
+              name="password"
+              label="Contraseña"
+              type="password"
+              placeholder="********"
+              rules={{
+                minLength: {
+                  value: 2,
+                  message: "La contraseña debe tener al menos 2 caracteres",
+                },
+                maxLength: {
+                  value: 50,
+                  message: "La contraseña no puede tener más de 50 caracteres",
+                },
+              }}
+            />
 
-          {/* BOTÓN INGRESAR */}
-          <DinamicBouncingButton
-            action={methods.handleSubmit(onSubmit)}
-            disabled={saving ? true : false}
-            spin={saving ? true : false}
-            text="Ingresar"
-            Icon={Rocket}
-          />
-        </FormProvider>
-      }
-    />
+            {/* BOTÓN INGRESAR */}
+            <DinamicBouncingButton
+              action={methods.handleSubmit(onSubmit)}
+              disabled={saving ? true : false}
+              spin={saving ? true : false}
+              text="Ingresar"
+              Icon={Rocket}
+            />
+          </FormProvider>
+        }
+      />
+    </>
   );
 }

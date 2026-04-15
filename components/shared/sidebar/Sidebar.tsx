@@ -4,6 +4,7 @@
 import {
   selectUserById,
   signOut,
+  verify,
 } from "@/src/Users/Infrastructure/UserController";
 
 /* DATA */
@@ -39,7 +40,7 @@ export function Sidebar() {
   const router = useRouter();
 
   const { expanded, toggleSidebar } = useSidebarStore();
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const { setAnnouncement } = useAnnouncement();
 
   const [userInfo, setUserInfo] = useState<IUserPrimitive | null>(null);
@@ -87,19 +88,52 @@ export function Sidebar() {
   useEffect(() => {
     try {
       const fetchUser = async () => {
-        const response = await selectUserById(user === null ? 0 : user.id);
+        const responseVerify = await verify();
 
-        if (response.ok) {
-          setUserInfo(response.user);
-          setLoading(false);
-        } else {
-          setAnnouncement({
-            isActivated: true,
-            isOk: false,
-            message: response.message,
-          });
+        if (responseVerify.ok && responseVerify.id !== null) {
+          setUser({ user: { id: responseVerify.id } });
 
-          router.push("/");
+          const responseUser = await selectUserById(
+            user === null ? responseVerify.id : user.id,
+          );
+
+          if (responseUser.ok) {
+            setUserInfo(responseUser.user);
+            setLoading(false);
+          }
+        }
+      };
+
+      fetchUser();
+    } catch (error) {
+      console.log("Error: ", error);
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message:
+          "Ocurrió un error al buscar el usuario, intente nuevamente más tarde",
+      });
+
+      router.push("/");
+    }
+  }, [router, setAnnouncement, setUser]);
+
+  useEffect(() => {
+    try {
+      const fetchUser = async () => {
+        if (user !== null) {
+          const response = await selectUserById(user.id);
+
+          if (response.ok) {
+            setUserInfo(response.user);
+            setLoading(false);
+          } else {
+            setAnnouncement({
+              isActivated: true,
+              isOk: false,
+              message: response.message,
+            });
+          }
         }
       };
 
@@ -189,32 +223,33 @@ export function Sidebar() {
             )}
           </div>
           <div
-            className={`flex items-center transition-all duration-300 gap-6 absolute ${expanded ? "right-4 opacity-100" : "lg:-right-64 right-4 lg:opacity-0 opacity-100 pointer-events-none"}`}
+            className={`flex items-center max-w-40 transition-all duration-300 gap-2 absolute ${expanded ? "right-4 opacity-100" : "lg:-right-64 right-4 lg:opacity-0 opacity-100 pointer-events-none"}`}
           >
-            <div className="flex flex-col">
-              {loading ? (
-                <>
-                  <div className="w-10 py-2 mb-1 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
-                  <div className="w-6 py-2 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
-                </>
-              ) : (
-                userInfo !== null && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: "easeInOut" }}
-                  >
-                    <span className="font-semibold">{userInfo.user_name}</span>
-                    <span className="text-xs text-neutral-400">
-                      {userInfo.email}
-                    </span>
-                  </motion.div>
-                )
-              )}
-            </div>
+            {loading ? (
+              <div className="flex flex-col truncate">
+                <div className="w-30 py-2 mb-1 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
+                <div className="w-24 py-2 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
+              </div>
+            ) : (
+              userInfo !== null && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="flex flex-col truncate"
+                >
+                  <span className="font-semibold truncate">
+                    {userInfo.user_name}
+                  </span>
+                  <span className="text-xs text-neutral-400 truncate">
+                    {userInfo.email}
+                  </span>
+                </motion.div>
+              )
+            )}
             <button
               onClick={handleSignOut}
-              className="hover:bg-[#d9f2f9] hover:text-green-800 p-1 transition-all duration-300 rounded"
+              className="hover:bg-[#d9f2f9] hover:text-green-800 p-1 transition-all duration-300 rounded cursor-pointer"
             >
               <LogOut className="size-4" />
             </button>

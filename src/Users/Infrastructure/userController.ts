@@ -135,7 +135,7 @@ export async function selectUserById(
   } catch (error) {
     console.log("Error: ", error);
     return {
-      message: "Ocurrió un al encontrar el usuario",
+      message: "Ocurrió un error al encontrar el usuario",
       ok: false,
       user: { id: 0, user_name: "", email: "", is_admin: "" },
     };
@@ -241,6 +241,7 @@ export async function signIn(formData: FormData): Promise<{
         message: response.message,
       };
     } else {
+      console.log("Entró al false: ", response)
       return {
         ok: false,
         message: response.message,
@@ -271,7 +272,7 @@ export async function verify(): Promise<{
       return {
         ok: true,
         message: response.message,
-        id: response.id,
+        id: response.token.id,
       };
     } else {
       return {

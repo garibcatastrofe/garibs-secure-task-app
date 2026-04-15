@@ -5,7 +5,7 @@ import {
   insertTask,
   selectTaskById,
   updateTask,
-} from "@/src/Tasks/Infrastructure/TaskRepository";
+} from "@/src/Tasks/Infrastructure/TaskController";
 
 /* COMPONENTS */
 import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";

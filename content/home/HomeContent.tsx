@@ -42,19 +42,19 @@ export function HomeContent() {
   useEffect(() => {
     try {
       const fetchUser = async () => {
-        const response = await selectUserById(user === null ? 0 : user.id);
+        if (user !== null) {
+          const response = await selectUserById(user.id);
 
-        if (response.ok) {
-          setUserInfo(response.user);
-          setLoading(false);
-        } else {
-          setAnnouncement({
-            isActivated: true,
-            isOk: false,
-            message: response.message,
-          });
-
-          router.push("/");
+          if (response.ok) {
+            setUserInfo(response.user);
+            setLoading(false);
+          } else {
+            setAnnouncement({
+              isActivated: true,
+              isOk: false,
+              message: response.message,
+            });
+          }
         }
       };
 
@@ -92,7 +92,7 @@ export function HomeContent() {
         transition={{ duration: 0.5, ease: "easeInOut" }}
       >
         {loading ? (
-          <div className="w-1/2 h-fit flex flex-col gap-4">
+          <div className="w-1/2 h-fit flex flex-col gap-4 items-center">
             <div className="w-5/6 py-6 rounded-2xl bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
             <div className="w-4/6 py-4 rounded-2xl bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
             <div className="w-3/6 py-2 rounded-2xl bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
@@ -103,6 +103,7 @@ export function HomeContent() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="flex flex-col items-center"
             >
               <p className="text-2xl font-semibold lg:text-6xl md:text-4xl text-neutral-900">
                 ¡Hola,{" "}

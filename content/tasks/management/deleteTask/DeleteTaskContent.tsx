@@ -1,7 +1,7 @@
 "use client";
 
 /* API CALLS */
-import { deleteTask } from "@/src/Tasks/Infrastructure/TaskRepository";
+import { deleteTask } from "@/src/Tasks/Infrastructure/TaskController";
 
 /* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";

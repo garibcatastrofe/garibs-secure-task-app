@@ -1,7 +1,7 @@
 "use client";
 
 /* API CALLS */
-import { selectTasks } from "@/src/Tasks/Infrastructure/TaskRepository";
+import { selectTasks } from "@/src/Tasks/Infrastructure/TaskController";
 
 /* COMPONENTS */
 import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
