@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verify } from "@/src/Users/Infrastructure/UserControlador";
 
-export function proxy(request: NextRequest) {
-  const user = request.cookies.get("accessToken");
+export async function proxy(request: NextRequest) {
+  const responseVerify = await verify();
 
-  /* if (!user) {
+  if (!responseVerify.ok) {
     return NextResponse.redirect(new URL("/", request.url));
-  } */
+  }
 
   return NextResponse.next();
 }
