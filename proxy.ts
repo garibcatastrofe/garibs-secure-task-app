@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { PORT } from "@/src/Shared/Domain/Consts/Port";
 
 export async function proxy(request: NextRequest) {
   try {
-    const res = await fetch(PORT + "/verify", {
+    /* const res = await fetch(PORT + "/verify", {
       method: "GET",
       headers: {
         cookie: request.headers.get("cookie") || "",
@@ -14,7 +13,7 @@ export async function proxy(request: NextRequest) {
     if (!res.ok) {
       console.log("Redirigiendo a /...")
       return NextResponse.redirect(new URL("/", request.url));
-    }
+    } */
 
     return NextResponse.next();
   } catch {
