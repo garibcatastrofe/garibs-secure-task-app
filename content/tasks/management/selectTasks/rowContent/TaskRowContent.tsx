@@ -19,14 +19,16 @@ import { ITaskPrimitive } from "@/src/Tasks/Domain/Interfaces/ITaskPrimitive";
 
 /* UTILS */
 import { getTwTextColor } from "@/utils/getTwTextColor";
-import { userInfo } from "@/temp/userInfo";
+import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
 
 export function TaskRowContent({
   task,
   twBgColor,
+  userInfo,
 }: {
   task: ITaskPrimitive;
   twBgColor: string;
+  userInfo: IUserPrimitive;
 }) {
   const router = useRouter();
   const { setModal } = useModal();

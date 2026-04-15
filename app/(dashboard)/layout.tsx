@@ -1,10 +1,15 @@
 "use client";
 
+/* COMPONENTS */
 import { Announcement } from "@/components/shared/announcement/Announcement";
 import { Modal } from "@/components/shared/modal/Modal";
 import { RouteTitle } from "@/components/shared/routeTitle/RouteTitle";
 import { Sidebar } from "@/components/shared/sidebar/Sidebar";
+
+/* STORES */
 import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
+
+/* LIBS */
 import { motion } from "framer-motion";
 
 export default function DashboardLayout({

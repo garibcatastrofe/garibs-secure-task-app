@@ -199,17 +199,26 @@ export async function signUp(formData: FormData): Promise<{
     const password = formData.get("password");
     const password_confirm = formData.get("password_confirm");
 
-    console.log({
-      user_name,
-      email,
-      password,
-      password_confirm,
+    const request = await fetch(PORT + "/signUp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, user_name, password_confirm }),
+      credentials: "include",
     });
 
-    return {
-      ok: true,
-      message: "Sesión iniciada correctamente",
-    };
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
   } catch {
     return {
       ok: false,
@@ -241,7 +250,6 @@ export async function signIn(formData: FormData): Promise<{
         message: response.message,
       };
     } else {
-      console.log("Entró al false: ", response)
       return {
         ok: false,
         message: response.message,

@@ -29,6 +29,7 @@ import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
 import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
+import { Links } from "@/types/links";
 
 /* LIBS */
 import { motion } from "framer-motion";
@@ -45,6 +46,7 @@ export function Sidebar() {
 
   const [userInfo, setUserInfo] = useState<IUserPrimitive | null>(null);
   const [loading, setLoading] = useState(true);
+  const [filteredLinks, setFilteredLinks] = useState<Links[] | null>(null);
 
   const pathname = usePathname();
 
@@ -64,6 +66,8 @@ export function Sidebar() {
           isOk: true,
           message: response.message,
         });
+
+        setUser({ user: null });
 
         router.push("/");
       } else {
@@ -99,6 +103,14 @@ export function Sidebar() {
 
           if (responseUser.ok) {
             setUserInfo(responseUser.user);
+            setFilteredLinks(
+              links.filter((link) => {
+                if (link.href === "/users") {
+                  return responseUser.user.is_admin === "SI";
+                }
+                return true;
+              }),
+            );
             setLoading(false);
           }
         }
@@ -126,6 +138,14 @@ export function Sidebar() {
 
           if (response.ok) {
             setUserInfo(response.user);
+            setFilteredLinks(
+              links.filter((link) => {
+                if (link.href === "/users") {
+                  return response.user.is_admin === "SI";
+                }
+                return true;
+              }),
+            );
             setLoading(false);
           } else {
             setAnnouncement({
@@ -178,31 +198,42 @@ export function Sidebar() {
           </div>
 
           <nav className="flex flex-col gap-2">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`p-2 rounded-xl relative group ${linkClasses(link.href)}`}
-              >
-                <div
-                  className={`flex items-center transition-all duration-300 ${expanded ? "gap-6" : "lg:gap-0 gap-6"}`}
-                >
-                  <div className="w-fit h-fit ml-1">
-                    <link.Icon className="size-4" />
-                  </div>
-                  <span
-                    className={`transition-all duration-300 ${expanded ? "w-fit opacity-100" : "lg:w-0 w-fit lg:opacity-0 opacity-100 pointer-events-none"}`}
-                  >
-                    {link.title}
-                  </span>
-                  {!expanded && (
-                    <div className="absolute z-20 invisible p-2 ml-6 text-sm font-medium text-green-800 transition-all translate-x-3 bg-white shadow-md opacity-0 rounded-full left-full group-hover:visible group-hover:opacity-100 group-hover:translate-x-0">
-                      {link.title}
-                    </div>
-                  )}
+            {loading ? (
+              <div className="flex flex-col truncate">
+                <div className="w-full py-8 mb-1 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
+                <div className="w-full py-8 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
+              </div>
+            ) : (
+              filteredLinks !== null && (
+                <div className="flex flex-col gap-2">
+                  {filteredLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`p-2 rounded-xl relative group ${linkClasses(link.href)}`}
+                    >
+                      <div
+                        className={`flex items-center transition-all duration-300 ${expanded ? "gap-6" : "lg:gap-0 gap-6"}`}
+                      >
+                        <div className="w-fit h-fit ml-1">
+                          <link.Icon className="size-4" />
+                        </div>
+                        <span
+                          className={`transition-all duration-300 ${expanded ? "w-fit opacity-100" : "lg:w-0 w-fit lg:opacity-0 opacity-100 pointer-events-none"}`}
+                        >
+                          {link.title}
+                        </span>
+                        {!expanded && (
+                          <div className="absolute z-20 invisible p-2 ml-6 text-sm font-medium text-green-800 transition-all translate-x-3 bg-white shadow-md opacity-0 rounded-full left-full group-hover:visible group-hover:opacity-100 group-hover:translate-x-0">
+                            {link.title}
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-              </Link>
-            ))}
+              )
+            )}
           </nav>
         </div>
 

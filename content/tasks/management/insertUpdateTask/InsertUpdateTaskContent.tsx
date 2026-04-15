@@ -6,6 +6,7 @@ import {
   selectTaskById,
   updateTask,
 } from "@/src/Tasks/Infrastructure/TaskController";
+import { selectUserById } from "@/src/Users/Infrastructure/UserController";
 
 /* COMPONENTS */
 import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
@@ -32,12 +33,11 @@ import { useRouter } from "next/navigation";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
-
-/* TEMP */
-import { userInfo } from "@/temp/userInfo";
+import { useAuthStore } from "@/stores/authentication/autenticacionStore";
 
 /* TYPES */
 import { TaskFormValues } from "@/content/tasks/types/TaskFormValues";
+import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
 
 /* UTILS */
 import { getDate } from "@/utils/date";
@@ -57,8 +57,11 @@ export function InsertUpdateTaskContent({
   const router = useRouter();
 
   const { setAnnouncement } = useAnnouncement();
+  const { user } = useAuthStore();
+
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState<IUserPrimitive | null>(null);
 
   const methods = useForm<TaskFormValues>();
 
@@ -121,45 +124,83 @@ export function InsertUpdateTaskContent({
         setLoading(false);
       };
 
-      if (isUpdate) {
+      if (user !== null) {
         const fetchTask = async () => {
-          const response = await selectTaskById(Number(id));
+          const responseUser = await selectUserById(user.id);
 
-          if (response.ok) {
-            methods.reset({
-              id: Number(id),
-              title: response.task.title,
-              description: response.task.description,
-              state: response.task.state,
-              user_id: response.task.user_id,
-            });
-            endLoading();
+          if (responseUser.ok) {
+            setUserInfo(responseUser.user);
+
+            if (isUpdate) {
+              const responseTask = await selectTaskById(Number(id));
+
+              if (responseTask.ok) {
+                if (responseUser.user.is_admin === "NO") {
+                  if (responseUser.user.id !== responseTask.task.user_id) {
+                    setAnnouncement({
+                      isActivated: true,
+                      isOk: false,
+                      message: "Tarea no encontrada para el usuario",
+                    });
+
+                    router.push("/tasks");
+                  }
+                }
+
+                methods.reset({
+                  id: Number(id),
+                  title: responseTask.task.title,
+                  description: responseTask.task.description,
+                  state: responseTask.task.state,
+                  user_id: responseTask.task.user_id,
+                });
+                endLoading();
+              } else {
+                setAnnouncement({
+                  isActivated: true,
+                  isOk: false,
+                  message: responseTask.message,
+                });
+
+                router.push("/tasks");
+              }
+            } else {
+              methods.reset({
+                id: 0,
+                title: "",
+                description: "",
+                state: "NO COMPLETADA",
+                user_id:
+                  responseUser.user.is_admin === "SI"
+                    ? 0
+                    : responseUser.user.id,
+              });
+              endLoading();
+            }
           } else {
             setAnnouncement({
               isActivated: true,
-              isOk: true,
-              message: response.message,
+              isOk: false,
+              message: responseUser.message,
             });
-
-            router.push("/tasks");
           }
         };
 
         fetchTask();
-      } else {
-        methods.reset({
-          id: 0,
-          title: "",
-          description: "",
-          state: "NO COMPLETADA",
-          user_id: userInfo.is_admin === "SI" ? 0 : userInfo.id,
-        });
-        endLoading();
       }
     } catch (error) {
       console.log("Error: ", error);
+
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message:
+          "Ocurrió un error al buscar el usuario, intente nuevamente más tarde",
+      });
+
+      router.push("/");
     }
-  }, [id, isUpdate, methods, router, setAnnouncement]);
+  }, [id, isUpdate, methods, router, setAnnouncement, user]);
 
   return (
     <FormProvider {...methods}>
@@ -184,7 +225,7 @@ export function InsertUpdateTaskContent({
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
               {/* TASK_ID */}
-              {isUpdate && userInfo.is_admin === "SI" && (
+              {userInfo !== null && isUpdate && userInfo.is_admin === "SI" && (
                 <DinamicInputNumber<TaskFormValues>
                   name="id"
                   label="ID de tarea"
@@ -199,7 +240,7 @@ export function InsertUpdateTaskContent({
               )}
 
               {/* USER_ID */}
-              {!isUpdate && (
+              {!isUpdate && userInfo !== null && userInfo.is_admin === "SI" && (
                 <DinamicInputNumber<TaskFormValues>
                   name="user_id"
                   label="ID de usuario"

@@ -27,10 +27,10 @@ import { ISelectUsersData } from "@/src/Users/Domain/Interfaces/ISelectUsersData
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
+import { useUsersFilter } from "@/stores/filter/users/filterUsersStore";
 
 /* UTILS */
 import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
-import { useUsersFilter } from "@/stores/filter/users/filterUsersStore";
 
 export function SelectUsersContent() {
   const router = useRouter();
@@ -71,8 +71,6 @@ export function SelectUsersContent() {
 
   const fetchUsers = useCallback(async () => {
     if (!filter) return;
-
-    console.log(filter);
 
     try {
       setLoading(true);
