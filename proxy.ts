@@ -6,7 +6,8 @@ export async function proxy(request: NextRequest) {
     const token = request.cookies.get("accessToken");
 
     if (!token) {
-      return NextResponse.redirect(new URL("/", request.url));
+      console.log("No hay token de sesión")
+      /* return NextResponse.redirect(new URL("/", request.url)); */
     }
 
     return NextResponse.next();
