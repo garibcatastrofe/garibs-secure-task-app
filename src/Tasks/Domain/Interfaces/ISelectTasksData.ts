@@ -1,6 +1,6 @@
-import { ITaskMadeBy } from "./ITaskMadeBy";
+import { ITaskPrimitive } from "./ITaskPrimitive";
 
 export interface ISelectTasksData {
-  data: ITaskMadeBy[];
+  data: ITaskPrimitive[];
   count: number;
 }

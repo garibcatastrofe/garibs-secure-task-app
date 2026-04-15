@@ -46,7 +46,7 @@ export function DinamicTableHeader({
         </BouncingButton>
 
         {/* BOTÓN FILTRAR */}
-        <BouncingButton
+        {/* <BouncingButton
           action={filterAction}
           backgroundColorHover="#ffffff"
           backgroundColor="#22c55e"
@@ -58,7 +58,7 @@ export function DinamicTableHeader({
           disabled={false}
         >
           <SlidersHorizontal className="size-5" />
-        </BouncingButton>
+        </BouncingButton> */}
       </div>
 
       <div className="flex justify-between w-full gap-4 lg:justify-end md:justify-end">

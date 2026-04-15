@@ -1,14 +1,49 @@
 "use client";
 
-import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
-import { AppIcon } from "@/components/svg/shared/AppIcon";
-import { Menu, LogOut, X } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+/* API CALLS */
+import {
+  selectUserById,
+  signOut,
+} from "@/src/Users/Infrastructure/UserController";
+
+/* DATA */
 import { links } from "@/data/links";
 
+/* HOOKS */
+import { useState, useEffect } from "react";
+
+/* ICONS */
+import { Menu, LogOut, X, Loader } from "lucide-react";
+import { AppIcon } from "@/components/svg/shared/AppIcon";
+
+/* NAVIGATION */
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+
+/* STORES */
+import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
+import { useAuthStore } from "@/stores/authentication/autenticacionStore";
+import { useAnnouncement } from "@/stores/announcement/announcementStore";
+
+/* TYPES */
+import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
+
+/* LIBS */
+import { motion } from "framer-motion";
+
+/* UTILS */
+import { getInitials } from "@/utils/getInitials";
+
 export function Sidebar() {
+  const router = useRouter();
+
   const { expanded, toggleSidebar } = useSidebarStore();
+  const { user } = useAuthStore();
+  const { setAnnouncement } = useAnnouncement();
+
+  const [userInfo, setUserInfo] = useState<IUserPrimitive | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const pathname = usePathname();
 
@@ -17,6 +52,70 @@ export function Sidebar() {
 
     return `${isActive ? "bg-linear-to-br from-green-200 via-green-50 to-green-200 bg-animated-gradient text-green-800" : "text-black hover:bg-neutral-100 transition-all duration-300"}`;
   };
+
+  const handleSignOut = async () => {
+    try {
+      const response = await signOut();
+
+      if (response.ok) {
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: response.message,
+        });
+
+        router.push("/");
+      } else {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message:
+          "Ocurrió un error al cerrar sesión, intente nuevamente más tarde",
+      });
+    }
+  };
+
+  useEffect(() => {
+    try {
+      const fetchUser = async () => {
+        const response = await selectUserById(user === null ? 0 : user.id);
+
+        if (response.ok) {
+          setUserInfo(response.user);
+          setLoading(false);
+        } else {
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+
+          router.push("/");
+        }
+      };
+
+      fetchUser();
+    } catch (error) {
+      console.log("Error: ", error);
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message:
+          "Ocurrió un error al buscar el usuario, intente nuevamente más tarde",
+      });
+
+      router.push("/");
+    }
+  }, [router, setAnnouncement, user]);
 
   return (
     <>
@@ -75,21 +174,50 @@ export function Sidebar() {
 
         <div className="flex items-center gap-0 p-4 overflow-hidden relative border-t border-t-neutral-200">
           <div className="rounded w-9 h-9 flex justify-center items-center ml-0.5 bg-linear-to-br from-green-500 via-green-400 to-green-500 bg-animated-gradient text-white shadow-md font-semibold">
-            <span>PD</span>
+            {loading ? (
+              <Loader className="size-4 animate-spin text-white" />
+            ) : (
+              userInfo !== null && (
+                <motion.span
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                >
+                  {getInitials(userInfo.user_name)}
+                </motion.span>
+              )
+            )}
           </div>
           <div
             className={`flex items-center transition-all duration-300 gap-6 absolute ${expanded ? "right-4 opacity-100" : "lg:-right-64 right-4 lg:opacity-0 opacity-100 pointer-events-none"}`}
           >
             <div className="flex flex-col">
-              <span className="font-semibold">Pirita Dreemurr</span>
-              <span className="text-xs text-neutral-400">pirita@gmail.com</span>
+              {loading ? (
+                <>
+                  <div className="w-10 py-2 mb-1 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
+                  <div className="w-6 py-2 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
+                </>
+              ) : (
+                userInfo !== null && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                  >
+                    <span className="font-semibold">{userInfo.user_name}</span>
+                    <span className="text-xs text-neutral-400">
+                      {userInfo.email}
+                    </span>
+                  </motion.div>
+                )
+              )}
             </div>
-            <Link
-              href={"/"}
+            <button
+              onClick={handleSignOut}
               className="hover:bg-[#d9f2f9] hover:text-green-800 p-1 transition-all duration-300 rounded"
             >
               <LogOut className="size-4" />
-            </Link>
+            </button>
           </div>
         </div>
       </aside>

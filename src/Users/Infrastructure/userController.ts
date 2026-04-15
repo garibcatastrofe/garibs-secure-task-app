@@ -1,5 +1,6 @@
-import { IQueryGeneral } from "@/src/Shared/Domain/Interfaces/IQueryGeneral";
 import { PORT } from "../../Shared/Domain/Consts/Port";
+
+import { IQueryGeneral } from "@/src/Shared/Domain/Interfaces/IQueryGeneral";
 import { IUserPrimitive } from "../Domain/Interfaces/IUserPrimitive";
 import { ISelectUsersResponse } from "../Domain/Interfaces/ISelectUsersResponse";
 import { ObjectUserFilterType } from "../Domain/Interfaces/ObjectUserFilterType";
@@ -136,7 +137,7 @@ export async function selectUserById(
     return {
       message: "Ocurrió un al encontrar el usuario",
       ok: false,
-      user: { id: 0, user_name: "", email: "" },
+      user: { id: 0, user_name: "", email: "", is_admin: "" },
     };
   }
 }
@@ -192,9 +193,6 @@ export async function signUp(formData: FormData): Promise<{
   ok: boolean;
   message: string;
 }> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     const user_name = formData.get("user_name");
     const email = formData.get("email");
@@ -224,22 +222,96 @@ export async function signIn(formData: FormData): Promise<{
   ok: boolean;
   message: string;
 }> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     const email = formData.get("email");
     const password = formData.get("password");
 
-    console.log({
-      email,
-      password,
+    const request = await fetch(PORT + "/signIn", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
 
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
+  } catch {
     return {
-      ok: true,
-      message: "Sesión iniciada correctamente",
+      ok: false,
+      message: "Ocurrió un error al iniciar sesión",
     };
+  }
+}
+
+export async function verify(): Promise<{
+  ok: boolean;
+  message: string;
+  id: number | null;
+}> {
+  try {
+    const request = await fetch(PORT + "/verify", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+        id: response.id,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+        id: null,
+      };
+    }
+  } catch {
+    return {
+      ok: false,
+      message: "Ocurrió un error al iniciar sesión",
+      id: null,
+    };
+  }
+}
+
+export async function signOut(): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  try {
+    const request = await fetch(PORT + "/signOut", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
   } catch {
     return {
       ok: false,

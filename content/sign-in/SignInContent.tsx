@@ -1,7 +1,7 @@
 "use client";
 
 /* API CALLS */
-import { signIn } from "@/src/Users/Infrastructure/UserController";
+import { signIn, verify } from "@/src/Users/Infrastructure/UserController";
 
 /* COMPONENTS */
 import { LoginUI } from "@/components/shared/loginUI/LoginUI";
@@ -24,10 +24,14 @@ import { SignInForm } from "./types/SignInForm";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
+import { useAuthStore } from "@/stores/authentication/autenticacionStore";
 
 export function SignInContent() {
   const router = useRouter();
+
   const { setAnnouncement } = useAnnouncement();
+  const { setUser } = useAuthStore();
+
   const [saving, setSaving] = useState(false);
 
   const methods = useForm<SignInForm>({
@@ -49,15 +53,30 @@ export function SignInContent() {
       const response = await signIn(formData);
 
       if (response.ok) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: true,
-          message: response.message,
-        });
-        console.log(data);
+        const verifyResponse = await verify();
 
-        router.push("/home");
+        if (verifyResponse.ok && verifyResponse.id !== null) {
+          setUser({ user: { id: verifyResponse.id } });
+
+          setAnnouncement({
+            isActivated: true,
+            isOk: true,
+            message: response.message,
+          });
+
+          router.push("/home");
+        } else {
+          setUser({ user: null });
+
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+        }
       } else {
+        setUser({ user: null });
+
         setAnnouncement({
           isActivated: true,
           isOk: false,

@@ -30,14 +30,12 @@ import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* UTILS */
 import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
-import { useModal } from "@/stores/modal/modalStore";
 import { useUsersFilter } from "@/stores/filter/users/filterUsersStore";
 
 export function SelectUsersContent() {
   const router = useRouter();
 
   const { setAnnouncement } = useAnnouncement();
-  const { setModal } = useModal();
   const { filter, setFilter } = useUsersFilter();
 
   const [users, setUsers] = useState<ISelectUsersData>({ data: [], count: 0 });
@@ -141,15 +139,9 @@ export function SelectUsersContent() {
         count={users.count}
         type={"usuario"}
         backAction={() => router.push("/home")}
-        filterAction={() =>
-          setModal({
-            isActivated: true,
-            title: "Filtrar",
-            body: <p>Hola :3</p>,
-          })
-        }
+        filterAction={() => {}}
         addAction={() => router.push("/users/add")}
-        excelButtonContent={<p>Hola :3</p>}
+        excelButtonContent={<></>}
         backContent={<House className="size-5" />}
         goBack={filter?.page === 0 ? false : true}
         goNext={hasNextPage ?? false}

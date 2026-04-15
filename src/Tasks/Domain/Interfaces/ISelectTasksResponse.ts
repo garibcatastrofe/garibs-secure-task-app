@@ -1,8 +1,10 @@
-import { ITaskMadeBy } from "./ITaskMadeBy";
+import { ITaskPrimitive } from "./ITaskPrimitive";
 
 export interface ISelectTasksResponse {
   ok: boolean;
   message: string;
-  data: ITaskMadeBy[];
-  count: number;
+  tasks: {
+    data: ITaskPrimitive[];
+    count: number;
+  };
 }

@@ -1,5 +1,12 @@
 "use client";
 
+/* API CALLS */
+import {
+  insertTask,
+  selectTaskById,
+  updateTask,
+} from "@/src/Tasks/Infrastructure/TaskRepository";
+
 /* COMPONENTS */
 import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
 import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
@@ -23,27 +30,22 @@ import { InsertUpdateTaskIcon } from "@/components/svg/tasks/InsertUpdateTaskIco
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
 
-/* SERVER ACTION */
-import {
-  insertTask,
-  updateTask,
-  selectTaskById,
-} from "@/src/Tasks/Infrastructure/taskController";
-
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
+
+/* TEMP */
+import { userInfo } from "@/temp/userInfo";
 
 /* TYPES */
 import { TaskFormValues } from "@/content/tasks/types/TaskFormValues";
 
 /* UTILS */
 import { getDate } from "@/utils/date";
+import { getTwTextColor } from "@/utils/getTwTextColor";
+import { DinamicCombobox } from "@/components/shared/form/dinamicInput/DinamicCombobox";
 
 /* LIBS */
 import { motion } from "framer-motion";
-
-import { getTwTextColor } from "@/utils/getTwTextColor";
-import { DinamicCombobox } from "@/components/shared/form/dinamicInput/DinamicCombobox";
 
 export function InsertUpdateTaskContent({
   isUpdate,
@@ -66,6 +68,7 @@ export function InsertUpdateTaskContent({
 
       const formData = new FormData();
 
+      formData.append("id", id);
       formData.append("title", data.title);
       formData.append("description", data.description);
       formData.append("state", data.state);
@@ -75,19 +78,34 @@ export function InsertUpdateTaskContent({
         const response = await updateTask(formData);
 
         if (response.ok) {
-          setAnnouncement(true, true, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: true,
+            message: response.message,
+          });
         } else {
-          setAnnouncement(true, false, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
         }
       } else {
         const response = await insertTask(formData);
 
         if (response.ok) {
-          setAnnouncement(true, true, response.message);
-
-          //methods.reset();
+          setAnnouncement({
+            isActivated: true,
+            isOk: true,
+            message: response.message,
+          });
+          methods.reset();
         } else {
-          setAnnouncement(true, false, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
         }
       }
 
@@ -117,7 +135,11 @@ export function InsertUpdateTaskContent({
             });
             endLoading();
           } else {
-            setAnnouncement(true, false, response.message);
+            setAnnouncement({
+              isActivated: true,
+              isOk: true,
+              message: response.message,
+            });
 
             router.push("/tasks");
           }
@@ -130,12 +152,12 @@ export function InsertUpdateTaskContent({
           title: "",
           description: "",
           state: "NO COMPLETADA",
-          user_id: 0,
+          user_id: userInfo.is_admin === "SI" ? 0 : userInfo.id,
         });
         endLoading();
       }
     } catch (error) {
-      console.log("Error", error);
+      console.log("Error: ", error);
     }
   }, [id, isUpdate, methods, router, setAnnouncement]);
 
@@ -162,7 +184,7 @@ export function InsertUpdateTaskContent({
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
               {/* TASK_ID */}
-              {isUpdate && (
+              {isUpdate && userInfo.is_admin === "SI" && (
                 <DinamicInputNumber<TaskFormValues>
                   name="id"
                   label="ID de tarea"
@@ -172,6 +194,22 @@ export function InsertUpdateTaskContent({
                   disabled
                   rules={{
                     required: "El ID de tarea es necesario",
+                  }}
+                />
+              )}
+
+              {/* USER_ID */}
+              {!isUpdate && (
+                <DinamicInputNumber<TaskFormValues>
+                  name="user_id"
+                  label="ID de usuario"
+                  placeholder="Ingrese el ID del usuario que realiza la tarea"
+                  min={1}
+                  max={99}
+                  disabled={false}
+                  rules={{
+                    required:
+                      "El ID del usuario que realiza la tarea es necesario",
                   }}
                 />
               )}
