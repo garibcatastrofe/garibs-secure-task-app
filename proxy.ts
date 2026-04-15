@@ -1,15 +1,24 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verify } from "@/src/Users/Infrastructure/UserControlador";
+import { PORT } from "@/src/Shared/Domain/Consts/Port";
 
 export async function proxy(request: NextRequest) {
-  const responseVerify = await verify();
+  try {
+    const res = await fetch(PORT + "/verify", {
+      method: "GET",
+      headers: {
+        cookie: request.headers.get("cookie") || "",
+      },
+    });
 
-  if (!responseVerify.ok) {
+    if (!res.ok) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    return NextResponse.next();
+  } catch {
     return NextResponse.redirect(new URL("/", request.url));
   }
-
-  return NextResponse.next();
 }
 
 export const config = {
