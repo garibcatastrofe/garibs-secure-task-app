@@ -5,7 +5,7 @@ import {
   insertUser,
   selectUserById,
   updateUser,
-} from "@/src/Users/Infrastructure/UserController";
+} from "@/src/Users/Infrastructure/UserControlador";
 
 /* COMPONENTS */
 import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";

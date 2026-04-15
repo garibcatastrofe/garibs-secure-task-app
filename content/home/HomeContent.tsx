@@ -1,7 +1,7 @@
 "use client";
 
 /* API CALLS */
-import { selectUserById } from "@/src/Users/Infrastructure/UserController";
+import { selectUserById } from "@/src/Users/Infrastructure/UserControlador";
 
 /* COMPONENTS */
 import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";

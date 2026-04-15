@@ -5,8 +5,8 @@ import {
   insertTask,
   selectTaskById,
   updateTask,
-} from "@/src/Tasks/Infrastructure/TaskController";
-import { selectUserById } from "@/src/Users/Infrastructure/UserController";
+} from "@/src/Tasks/Infrastructure/TaskControlador";
+import { selectUserById } from "@/src/Users/Infrastructure/UserControlador";
 
 /* COMPONENTS */
 import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";

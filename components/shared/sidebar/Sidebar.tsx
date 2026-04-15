@@ -5,7 +5,7 @@ import {
   selectUserById,
   signOut,
   verify,
-} from "@/src/Users/Infrastructure/UserController";
+} from "@/src/Users/Infrastructure/UserControlador";
 
 /* DATA */
 import { links } from "@/data/links";
