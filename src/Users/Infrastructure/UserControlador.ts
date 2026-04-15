@@ -255,7 +255,8 @@ export async function signIn(formData: FormData): Promise<{
         message: response.message,
       };
     }
-  } catch {
+  } catch (error) {
+    console.log("Error: ", error);
     return {
       ok: false,
       message: "Ocurrió un error al ingresar",
