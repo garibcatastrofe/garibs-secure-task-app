@@ -1,12 +1,21 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { SquarePen, Trash2 } from "lucide-react";
+/* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
-import { useModal } from "@/stores/modal/modalStore";
-import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
 import { DeleteUserContent } from "../../deleteUser/DeleteUserContent";
+
+/* ICONS */
+import { SquarePen, Trash2 } from "lucide-react";
+
+/* NAVIGATION */
+import { useRouter } from "next/navigation";
+
+/* STORES */
+import { useModal } from "@/stores/modal/modalStore";
+
+/* TYPES */
+import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
 
 export function UserRowContent({
   user,
@@ -49,14 +58,16 @@ export function UserRowContent({
           </BouncingButton>
           <BouncingButton
             action={() =>
-              setModal(
-                true,
-                "Eliminar tarea",
-                <DeleteUserContent
-                  user_id={user.id ?? 0}
-                  user_name={user.user_name}
-                />,
-              )
+              setModal({
+                isActivated: true,
+                title: "Eliminar usuario",
+                body: (
+                  <DeleteUserContent
+                    user_id={user.id ?? 0}
+                    user_name={user.user_name}
+                  />
+                ),
+              })
             }
             backgroundColorHover="#ffffff"
             backgroundColor="#ef4444"

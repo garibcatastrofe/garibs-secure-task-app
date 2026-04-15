@@ -1,8 +1,9 @@
 export const tasksColumns: string[] = [
+  "ID",
   "Título",
   "Descripción",
   "Fecha",
   "Estado",
-  "Creada por",
+  "ID Usuario",
   "",
 ];

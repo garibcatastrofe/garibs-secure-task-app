@@ -1,50 +1,73 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { SquarePen, Trash2 } from "lucide-react";
+/* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
-import { ITaskMadeBy } from "@/src/Tasks/Domain/Interfaces/ITaskMadeBy";
-import { useModal } from "@/stores/modal/modalStore";
 import { DeleteTaskContent } from "@/content/tasks/management/deleteTask/DeleteTaskContent";
+
+/* ICONS */
+import { SquarePen, Trash2 } from "lucide-react";
+
+/* NAVIGATION */
+import { useRouter } from "next/navigation";
+
+/* STORES */
+import { useModal } from "@/stores/modal/modalStore";
+
+/* TYPES */
+import { ITaskPrimitive } from "@/src/Tasks/Domain/Interfaces/ITaskPrimitive";
+
+/* UTILS */
 import { getTwTextColor } from "@/utils/getTwTextColor";
+import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
 
 export function TaskRowContent({
   task,
   twBgColor,
+  userInfo,
 }: {
-  task: ITaskMadeBy;
+  task: ITaskPrimitive;
   twBgColor: string;
+  userInfo: IUserPrimitive;
 }) {
   const router = useRouter();
   const { setModal } = useModal();
 
   return (
     <>
+      {userInfo.is_admin === "SI" && (
+        <DinamicTd twClassName="text-nowrap">
+          <p>{task.id}</p>
+        </DinamicTd>
+      )}
+
       <DinamicTd twClassName="">
-        <p className="min-w-40">{task.task.title}</p>
+        <p className="min-w-40">{task.title}</p>
       </DinamicTd>
       <DinamicTd twClassName="">
-        <p className="min-w-40">{task.task.description}</p>
+        <p className="min-w-40">{task.description}</p>
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p>{task.task.created_date}</p>
+        <p>{task.creation_date}</p>
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p className={`font-bold ${getTwTextColor(task.task.state)}`}>
-          {task.task.state}
+        <p className={`font-bold ${getTwTextColor(task.state)}`}>
+          {task.state}
         </p>
       </DinamicTd>
-      <DinamicTd twClassName="text-nowrap">
-        <p>{task.user_name}</p>
-      </DinamicTd>
+
+      {userInfo.is_admin === "SI" && (
+        <DinamicTd twClassName="text-nowrap">
+          <p>{task.user_id}</p>
+        </DinamicTd>
+      )}
 
       <td
         className={`py-6 whitespace-nowrap group-hover:bg-green-100 transition-all duration-200 px-3 sticky right-0 z-10 ${twBgColor}`}
       >
         <div className="flex gap-2">
           <BouncingButton
-            action={() => router.push(`/tasks/update/${task.task.id}`)}
+            action={() => router.push(`/tasks/update/${task.id}`)}
             backgroundColorHover="#ffffff"
             backgroundColor="#fbbf24"
             textColor="#ffffff"
@@ -58,14 +81,16 @@ export function TaskRowContent({
           </BouncingButton>
           <BouncingButton
             action={() =>
-              setModal(
-                true,
-                "Eliminar tarea",
-                <DeleteTaskContent
-                  task_id={task.task.id ?? 0}
-                  title={task.task.title}
-                />,
-              )
+              setModal({
+                isActivated: true,
+                title: "Eliminar tarea",
+                body: (
+                  <DeleteTaskContent
+                    task_id={task.id ?? 0}
+                    title={task.title}
+                  />
+                ),
+              })
             }
             backgroundColorHover="#ffffff"
             backgroundColor="#ef4444"

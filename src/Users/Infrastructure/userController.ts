@@ -1,33 +1,224 @@
-"use server";
+import { PORT } from "../../Shared/Domain/Consts/Port";
 
-import { IQuery } from "@/src/Shared/Domain/Interfaces/IQuery";
-import { ISelectUsersResponse } from "../Domain/Interfaces/ISelectUsersResponse";
+import { IQueryGeneral } from "@/src/Shared/Domain/Interfaces/IQueryGeneral";
 import { IUserPrimitive } from "../Domain/Interfaces/IUserPrimitive";
+import { ISelectUsersResponse } from "../Domain/Interfaces/ISelectUsersResponse";
+import { ObjectUserFilterType } from "../Domain/Interfaces/ObjectUserFilterType";
+
+export async function insertUser(formData: FormData): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  try {
+    const user_name = formData.get("user_name");
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const password_confirm = formData.get("password_confirm");
+    const is_admin = formData.get("is_admin");
+
+    const request = await fetch(`${PORT}/user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_name,
+        email,
+        password,
+        password_confirm,
+        is_admin,
+      }),
+    });
+
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    return {
+      ok: false,
+      message: "Ocurrió un error al guardar el usuario",
+    };
+  }
+}
+
+export async function deleteUser(formData: FormData): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  try {
+    const id = formData.get("id");
+
+    const request = await fetch(`${PORT}/user/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    return {
+      ok: false,
+      message: "Ocurrió un error al eliminar el usuario",
+    };
+  }
+}
+
+export async function selectUsers(
+  query: IQueryGeneral<IUserPrimitive, ObjectUserFilterType>,
+): Promise<ISelectUsersResponse> {
+  try {
+    const request = await fetch(`${PORT}/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(query),
+    });
+
+    const response: ISelectUsersResponse = await request.json();
+
+    return response;
+  } catch (error) {
+    console.log("Error: ", error);
+    return {
+      ok: false,
+      message:
+        "Ocurrió un error al buscar los usuarios, intente nuevamente más tarde",
+      users: {
+        data: [],
+        count: 0,
+      },
+    };
+  }
+}
+
+export async function selectUserById(
+  id: number,
+): Promise<{ ok: boolean; message: string; user: IUserPrimitive }> {
+  try {
+    const request = await fetch(`${PORT}/user/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response: { ok: boolean; message: string; user: IUserPrimitive } =
+      await request.json();
+
+    return response;
+  } catch (error) {
+    console.log("Error: ", error);
+    return {
+      message: "Ocurrió un error al encontrar el usuario",
+      ok: false,
+      user: { id: 0, user_name: "", email: "", is_admin: "" },
+    };
+  }
+}
+
+export async function updateUser(formData: FormData): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  try {
+    const id = formData.get("id");
+    const user_name = formData.get("user_name");
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const password_confirm = formData.get("password_confirm");
+
+    const request = await fetch(`${PORT}/user/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+        user_name,
+        email,
+        password,
+        password_confirm,
+      }),
+    });
+
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    return {
+      ok: false,
+      message: "Ocurrió un error al actualizar el usuario",
+    };
+  }
+}
 
 export async function signUp(formData: FormData): Promise<{
   ok: boolean;
   message: string;
 }> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     const user_name = formData.get("user_name");
     const email = formData.get("email");
     const password = formData.get("password");
     const password_confirm = formData.get("password_confirm");
 
-    console.log({
-      user_name,
-      email,
-      password,
-      password_confirm,
+    const request = await fetch(PORT + "/signUp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, user_name, password_confirm }),
+      credentials: "include",
     });
 
-    return {
-      ok: true,
-      message: "Sesión iniciada correctamente",
-    };
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
   } catch {
     return {
       ok: false,
@@ -40,22 +231,30 @@ export async function signIn(formData: FormData): Promise<{
   ok: boolean;
   message: string;
 }> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     const email = formData.get("email");
     const password = formData.get("password");
 
-    console.log({
-      email,
-      password,
+    const request = await fetch(PORT + "/signIn", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
 
-    return {
-      ok: true,
-      message: "Sesión iniciada correctamente",
-    };
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
   } catch {
     return {
       ok: false,
@@ -64,174 +263,68 @@ export async function signIn(formData: FormData): Promise<{
   }
 }
 
-export async function insertUser(formData: FormData): Promise<{
+export async function verify(): Promise<{
+  ok: boolean;
+  message: string;
+  id: number | null;
+}> {
+  try {
+    const request = await fetch(PORT + "/verify", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+        id: response.token.id,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+        id: null,
+      };
+    }
+  } catch {
+    return {
+      ok: false,
+      message: "Ocurrió un error al iniciar sesión",
+      id: null,
+    };
+  }
+}
+
+export async function signOut(): Promise<{
   ok: boolean;
   message: string;
 }> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
-    const user_name = formData.get("user_name");
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const password_confirm = formData.get("password_confirm");
-
-    console.log({
-      user_name,
-      email,
-      password,
-      password_confirm,
+    const request = await fetch(PORT + "/signOut", {
+      method: "POST",
+      credentials: "include",
     });
 
-    return {
-      ok: true,
-      message: "Usuario guardado correctamente",
-    };
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
   } catch {
     return {
       ok: false,
-      message: "Ocurrió un error al guardar el usuario",
-    };
-  }
-}
-
-export async function updateUser(formData: FormData): Promise<{
-  ok: boolean;
-  message: string;
-}> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  try {
-    const id = formData.get("id");
-    const user_name = formData.get("user_name");
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const password_confirm = formData.get("password_confirm");
-
-    console.log({
-      id,
-      user_name,
-      email,
-      password,
-      password_confirm,
-    });
-
-    return {
-      ok: true,
-      message: "Usuario actualizado correctamente",
-    };
-  } catch {
-    return {
-      ok: false,
-      message: "Ocurrió un error al actualizar la tarea",
-    };
-  }
-}
-
-export async function selectUsers(
-  query: IQuery<IUserPrimitive>,
-): Promise<ISelectUsersResponse> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  console.log(query);
-
-  try {
-    return {
-      ok: true,
-      message: "Usuarios encontradas correctamente",
-      data: [
-        {
-          id: 1,
-          email: "pirita@gmail.com",
-          user_name: "Pirita Dreemurr",
-        },
-        {
-          id: 2,
-          email: "cornalina@gmail.com",
-          user_name: "Cornalina Dreemurr",
-        },
-        {
-          id: 3,
-          email: "nau@gmail.com",
-          user_name: "Nau Dreemurr",
-        },
-        {
-          id: 4,
-          email: "gravity@gmail.com",
-          user_name: "Gravity Dreemurr",
-        },
-      ],
-      count: 4,
-    };
-  } catch {
-    return {
-      ok: false,
-      message:
-        "Ocurrió un error al buscar los usuarios, intente nuevamente más tarde",
-      data: [],
-      count: 0,
-    };
-  }
-}
-
-export async function deleteUser(formData: FormData): Promise<{
-  ok: boolean;
-  message: string;
-}> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  try {
-    const id = formData.get("id");
-
-    console.log({
-      id,
-    });
-
-    return {
-      ok: true,
-      message: "Usuario eliminado correctamente",
-    };
-  } catch {
-    return {
-      ok: false,
-      message: "Ocurrió un error al eliminar el usuario",
-    };
-  }
-}
-
-export async function selectUserById(
-  id: number,
-): Promise<{ ok: boolean; message: string; user: IUserPrimitive }> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  try {
-    console.log({
-      id,
-    });
-
-    return {
-      ok: true,
-      message: "Usuario encontrado correctamente",
-      user: {
-        id: 1,
-        user_name: "Pirita Dreemurr",
-        email: "pirita@gmail.com",
-      },
-    };
-  } catch {
-    return {
-      ok: false,
-      message: "Ocurrió un al encontrar el usuario",
-      user: {
-        id: 0,
-        user_name: "",
-        email: "",
-      },
+      message: "Ocurrió un error al iniciar sesión",
     };
   }
 }

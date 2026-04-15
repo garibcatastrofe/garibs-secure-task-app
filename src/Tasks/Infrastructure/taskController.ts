@@ -1,146 +1,55 @@
-"use server";
+import { PORT } from "../../Shared/Domain/Consts/Port";
 
-/* TYPES */
-import { IQuery } from "@/src/Shared/Domain/Interfaces/IQuery";
-import { ITaskPrimitive } from "@/src/Tasks/Domain/Interfaces/ITaskPrimitive";
+import { IQueryGeneral } from "@/src/Shared/Domain/Interfaces/IQueryGeneral";
+import { ITaskPrimitive } from "../Domain/Interfaces/ITaskPrimitive";
 import { ISelectTasksResponse } from "../Domain/Interfaces/ISelectTasksResponse";
+import { ObjectTaskFilterType } from "../Domain/Interfaces/ObjectTaskFilterType";
+
+import { formatDate } from "@/utils/formatDate";
 
 export async function insertTask(formData: FormData): Promise<{
   ok: boolean;
   message: string;
 }> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     const title = formData.get("title");
     const description = formData.get("description");
     const state = formData.get("state");
     const user_id = formData.get("user_id");
+    const creation_date = formatDate(new Date());
 
-    console.log({
-      title,
-      description,
-      state,
-      user_id,
+    const request = await fetch(`${PORT}/task`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        description,
+        state,
+        user_id,
+        creation_date,
+      }),
     });
 
-    return {
-      ok: true,
-      message: "Tarea guardada correctamente",
-    };
-  } catch {
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
+  } catch (error) {
+    console.log("Error: ", error);
     return {
       ok: false,
       message: "Ocurrió un error al guardar la tarea",
-    };
-  }
-}
-
-export async function updateTask(formData: FormData): Promise<{
-  ok: boolean;
-  message: string;
-}> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  try {
-    const id = formData.get("id");
-    const title = formData.get("title");
-    const description = formData.get("description");
-    const state = formData.get("state");
-    const user_id = formData.get("user_id");
-
-    console.log({
-      id,
-      title,
-      description,
-      state,
-      user_id,
-    });
-
-    return {
-      ok: true,
-      message: "Tarea actualizada correctamente",
-    };
-  } catch {
-    return {
-      ok: false,
-      message: "Ocurrió un error al actualizar la tarea",
-    };
-  }
-}
-
-export async function selectTasks(
-  query: IQuery<ITaskPrimitive>,
-): Promise<ISelectTasksResponse> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  console.log(query);
-
-  try {
-    return {
-      ok: true,
-      message: "Tareas encontradas correctamente",
-      data: [
-        {
-          task: {
-            id: 1,
-            title: "Tarea 1",
-            description:
-              "Esta es la primera tarea en la que tengo que ordenar todas las cosas de mi cuarto!!!!",
-            created_date: "2026-01-01 08:30:00",
-            state: "COMPLETADA",
-            user_id: 1,
-          },
-          user_name: "Pirita Dreemurr",
-        },
-        {
-          task: {
-            id: 2,
-            title: "Tarea 2",
-            description:
-              "Esta es la segunda tarea, necesito ir a comprar cosas al super!!!",
-            created_date: "2026-02-17 10:45:00",
-            state: "NO COMPLETADA",
-            user_id: 1,
-          },
-          user_name: "Pirita Dreemurr",
-        },
-        {
-          task: {
-            id: 3,
-            title: "Tarea 3",
-            description:
-              "Esta tarea es super importante así que ponte las pilas!!!!",
-            created_date: "2026-02-17 10:45:00",
-            state: "EN PROCESO",
-            user_id: 1,
-          },
-          user_name: "Pirita Dreemurr",
-        },
-        {
-          task: {
-            id: 4,
-            title: "Tarea 4",
-            description: "Creo que realmente no necesito esta tarea",
-            created_date: "2026-02-17 10:45:00",
-            state: "CANCELADA",
-            user_id: 1,
-          },
-          user_name: "Pirita Dreemurr",
-        },
-      ],
-      count: 4,
-    };
-  } catch {
-    return {
-      ok: false,
-      message:
-        "Ocurrió un error al buscar las tareas, intente nuevamente más tarde",
-      data: [],
-      count: 0,
     };
   }
 }
@@ -149,21 +58,31 @@ export async function deleteTask(formData: FormData): Promise<{
   ok: boolean;
   message: string;
 }> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
     const id = formData.get("id");
 
-    console.log({
-      id,
+    const request = await fetch(`${PORT}/task/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
 
-    return {
-      ok: true,
-      message: "Tarea eliminada correctamente",
-    };
-  } catch {
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
+  } catch (error) {
+    console.log("Error: ", error);
     return {
       ok: false,
       message: "Ocurrió un error al eliminar la tarea",
@@ -171,42 +90,111 @@ export async function deleteTask(formData: FormData): Promise<{
   }
 }
 
+export async function selectTasks(
+  query: IQueryGeneral<ITaskPrimitive, ObjectTaskFilterType>,
+): Promise<ISelectTasksResponse> {
+  try {
+    const request = await fetch(`${PORT}/tasks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(query),
+    });
+
+    const response: ISelectTasksResponse = await request.json();
+
+    return response;
+  } catch (error) {
+    console.log("Error: ", error);
+    return {
+      ok: false,
+      message:
+        "Ocurrió un error al buscar las tareas, intente nuevamente más tarde",
+      tasks: {
+        data: [],
+        count: 0,
+      },
+    };
+  }
+}
+
 export async function selectTaskById(
   id: number,
 ): Promise<{ ok: boolean; message: string; task: ITaskPrimitive }> {
-  // Simular delay del backend
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
   try {
-    console.log({
-      id,
+    const request = await fetch(`${PORT}/task/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
 
+    const response: { ok: boolean; message: string; task: ITaskPrimitive } =
+      await request.json();
+
+    return response;
+  } catch (error) {
+    console.log("Error: ", error);
     return {
-      ok: true,
-      message: "Tarea encontrado correctamente",
-      task: {
-        id: 1,
-        title: "Tarea 1",
-        description:
-          "Esta es la primera tarea en la que tengo que ordenar todas las cosas de mi cuarto!!!!",
-        created_date: "2026-02-17 10:45:00",
-        state: "COMPLETADA",
-        user_id: 1,
-      },
-    };
-  } catch {
-    return {
+      message: "Ocurrió un al encontrar la tarea",
       ok: false,
-      message: "Ocurrió un al encontrar el usuario",
       task: {
         id: 0,
         title: "",
         description: "",
-        created_date: "",
+        creation_date: "",
+        expiration_date: "",
         state: "",
         user_id: 0,
       },
+    };
+  }
+}
+
+export async function updateTask(formData: FormData): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  try {
+    const id = formData.get("id");
+    const title = formData.get("title");
+    const description = formData.get("description");
+    const state = formData.get("state");
+    const user_id = formData.get("user_id");
+
+    const request = await fetch(`${PORT}/task/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+        title,
+        description,
+        state,
+        user_id,
+      }),
+    });
+
+    const response = await request.json();
+
+    if (response.ok) {
+      return {
+        ok: true,
+        message: response.message,
+      };
+    } else {
+      return {
+        ok: false,
+        message: response.message,
+      };
+    }
+  } catch (error) {
+    console.log("Error: ", error);
+    return {
+      ok: false,
+      message: "Ocurrió un error al actualizar la tarea",
     };
   }
 }

@@ -1,10 +1,15 @@
 "use client";
 
+/* COMPONENTS */
 import { Announcement } from "@/components/shared/announcement/Announcement";
 import { Modal } from "@/components/shared/modal/Modal";
 import { RouteTitle } from "@/components/shared/routeTitle/RouteTitle";
 import { Sidebar } from "@/components/shared/sidebar/Sidebar";
+
+/* STORES */
 import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
+
+/* LIBS */
 import { motion } from "framer-motion";
 
 export default function DashboardLayout({
@@ -16,7 +21,7 @@ export default function DashboardLayout({
 
   return (
     <motion.div
-      className="flex min-h-dvh overflow-y-hidden"
+      className="flex min-h-dvh overflow-y-hidden overflow-x-hidden"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}

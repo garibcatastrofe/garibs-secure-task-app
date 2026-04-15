@@ -6,5 +6,4 @@ export type DinamicInputTextProps<T extends FieldValues> = {
   placeholder?: string;
   type?: string;
   rules?: RegisterOptions<T, Path<T>>;
-  isTextArea: boolean
 };

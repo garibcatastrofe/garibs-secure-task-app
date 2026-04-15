@@ -1,14 +1,22 @@
 "use client";
 
+/* API CALLS */
+import { deleteUser } from "@/src/Users/Infrastructure/UserController";
+
+/* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 
 /* HOOKS */
 import { useForm, FormProvider } from "react-hook-form";
 import { useState } from "react";
+
+/* ICONS */
 import { Loader, Trash2 } from "lucide-react";
+
+/* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { useModal } from "@/stores/modal/modalStore";
-import { deleteUser } from "@/src/Users/Infrastructure/userController";
+import { useUsersFilter } from "@/stores/filter/users/filterUsersStore";
 
 export function DeleteUserContent({
   user_name,
@@ -17,9 +25,11 @@ export function DeleteUserContent({
   user_name: string;
   user_id: number;
 }) {
-  const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
-  const { modalBody, modalTitle, setModal } = useModal();
+  const { modal, setModal } = useModal();
+  const { filter, setFilter } = useUsersFilter();
+
+  const [deleting, setDeleting] = useState(false);
 
   const methods = useForm<{ id: number }>({
     defaultValues: {
@@ -27,21 +37,40 @@ export function DeleteUserContent({
     },
   });
 
-  const onSubmit = async ({ id }: { id: number }) => {
+  const onSubmit = async () => {
     try {
       setDeleting(true);
 
       const formData = new FormData();
 
-      formData.append("id", id.toString());
+      formData.append("id", user_id.toString());
 
       const response = await deleteUser(formData);
 
       if (response.ok) {
-        setAnnouncement(true, true, response.message);
-        setModal(false, modalTitle ?? "", modalBody);
+        setFilter({
+          page: 0,
+          perPage: filter?.perPage ?? 10,
+          order: filter?.order ?? "asc",
+          orderBy: filter?.orderBy ?? "id",
+          filtersObject: filter?.filtersObject,
+        });
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: response.message,
+        });
+        setModal({
+          isActivated: false,
+          title: modal.title ?? "",
+          body: modal.body,
+        });
       } else {
-        setAnnouncement(true, false, response.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
       }
 
       setDeleting(false);
@@ -59,6 +88,7 @@ export function DeleteUserContent({
           usuario:
         </p>
         <p className="w-full truncate font-semibold">{user_name}</p>
+        <p>{user_id}</p>
         <p>Será eliminado para siempre (¡Mucho tiempo!)</p>
       </div>
       <div className="">
@@ -71,7 +101,11 @@ export function DeleteUserContent({
                   deleting
                     ? () => {}
                     : () => {
-                        setModal(false, modalTitle ?? "", modalBody);
+                        setModal({
+                          isActivated: false,
+                          title: modal.title ?? "",
+                          body: modal.body,
+                        });
                       }
                 }
                 backgroundColorHover="#22c55e"

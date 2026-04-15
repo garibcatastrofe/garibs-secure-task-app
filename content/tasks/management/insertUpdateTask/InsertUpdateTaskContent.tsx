@@ -1,54 +1,51 @@
 "use client";
 
-/* COMPONENTS */
+/* API CALLS */
 import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
+  insertTask,
+  selectTaskById,
+  updateTask,
+} from "@/src/Tasks/Infrastructure/TaskController";
+import { selectUserById } from "@/src/Users/Infrastructure/UserController";
+
+/* COMPONENTS */
+import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
+import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
+
+import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
+import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
+import { DinamicInputTextArea } from "@/components/shared/form/dinamicInput/DinamicInputTextArea";
+import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
 
 /* DATA */
 import { taskStates } from "@/content/tasks/data/comboboxItems/comboboxItems";
 
 /* HOOKS */
-import { useForm, Controller, FormProvider } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useState, useEffect } from "react";
 
 /* ICONS */
 import { Save } from "lucide-react";
+import { InsertUpdateTaskIcon } from "@/components/svg/tasks/InsertUpdateTaskIcon";
 
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
 
-/* SERVER ACTION */
-import {
-  insertTask,
-  updateTask,
-  selectTaskById,
-} from "@/src/Tasks/Infrastructure/taskController";
-
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
+import { useAuthStore } from "@/stores/authentication/autenticacionStore";
 
 /* TYPES */
 import { TaskFormValues } from "@/content/tasks/types/TaskFormValues";
+import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
 
 /* UTILS */
 import { getDate } from "@/utils/date";
+import { getTwTextColor } from "@/utils/getTwTextColor";
+import { DinamicCombobox } from "@/components/shared/form/dinamicInput/DinamicCombobox";
 
 /* LIBS */
 import { motion } from "framer-motion";
-import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
-import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
-import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
-import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
-import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
-import { InsertUpdateTaskIcon } from "@/components/svg/tasks/InsertUpdateTaskIcon";
-import { getTwTextColor } from "@/utils/getTwTextColor";
-import { getTwBgColor } from "@/utils/getTwBgColor";
 
 export function InsertUpdateTaskContent({
   isUpdate,
@@ -60,8 +57,11 @@ export function InsertUpdateTaskContent({
   const router = useRouter();
 
   const { setAnnouncement } = useAnnouncement();
+  const { user } = useAuthStore();
+
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState<IUserPrimitive | null>(null);
 
   const methods = useForm<TaskFormValues>();
 
@@ -71,6 +71,7 @@ export function InsertUpdateTaskContent({
 
       const formData = new FormData();
 
+      formData.append("id", id);
       formData.append("title", data.title);
       formData.append("description", data.description);
       formData.append("state", data.state);
@@ -80,19 +81,34 @@ export function InsertUpdateTaskContent({
         const response = await updateTask(formData);
 
         if (response.ok) {
-          setAnnouncement(true, true, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: true,
+            message: response.message,
+          });
         } else {
-          setAnnouncement(true, false, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
         }
       } else {
         const response = await insertTask(formData);
 
         if (response.ok) {
-          setAnnouncement(true, true, response.message);
-
-          //methods.reset();
+          setAnnouncement({
+            isActivated: true,
+            isOk: true,
+            message: response.message,
+          });
+          methods.reset();
         } else {
-          setAnnouncement(true, false, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
         }
       }
 
@@ -108,41 +124,83 @@ export function InsertUpdateTaskContent({
         setLoading(false);
       };
 
-      if (isUpdate) {
+      if (user !== null) {
         const fetchTask = async () => {
-          const response = await selectTaskById(Number(id));
+          const responseUser = await selectUserById(user.id);
 
-          if (response.ok) {
-            methods.reset({
-              id: Number(id),
-              title: response.task.title,
-              description: response.task.description,
-              state: response.task.state,
-              user_id: response.task.user_id,
-            });
-            endLoading();
+          if (responseUser.ok) {
+            setUserInfo(responseUser.user);
+
+            if (isUpdate) {
+              const responseTask = await selectTaskById(Number(id));
+
+              if (responseTask.ok) {
+                if (responseUser.user.is_admin === "NO") {
+                  if (responseUser.user.id !== responseTask.task.user_id) {
+                    setAnnouncement({
+                      isActivated: true,
+                      isOk: false,
+                      message: "Tarea no encontrada para el usuario",
+                    });
+
+                    router.push("/tasks");
+                  }
+                }
+
+                methods.reset({
+                  id: Number(id),
+                  title: responseTask.task.title,
+                  description: responseTask.task.description,
+                  state: responseTask.task.state,
+                  user_id: responseTask.task.user_id,
+                });
+                endLoading();
+              } else {
+                setAnnouncement({
+                  isActivated: true,
+                  isOk: false,
+                  message: responseTask.message,
+                });
+
+                router.push("/tasks");
+              }
+            } else {
+              methods.reset({
+                id: 0,
+                title: "",
+                description: "",
+                state: "NO COMPLETADA",
+                user_id:
+                  responseUser.user.is_admin === "SI"
+                    ? 0
+                    : responseUser.user.id,
+              });
+              endLoading();
+            }
           } else {
-            setAnnouncement(true, false, response.message);
-
-            router.push("/tasks");
+            setAnnouncement({
+              isActivated: true,
+              isOk: false,
+              message: responseUser.message,
+            });
           }
         };
 
         fetchTask();
-      } else {
-        methods.reset({
-          id: 0,
-          title: "",
-          description: "",
-          state: "NO COMPLETADA",
-          user_id: 0,
-        });
-        endLoading();
       }
     } catch (error) {
-      console.log("Error", error);
+      console.log("Error: ", error);
+
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message:
+          "Ocurrió un error al buscar el usuario, intente nuevamente más tarde",
+      });
+
+      router.push("/");
     }
-  }, [id, isUpdate, methods, router, setAnnouncement]);
+  }, [id, isUpdate, methods, router, setAnnouncement, user]);
 
   return (
     <FormProvider {...methods}>
@@ -167,7 +225,7 @@ export function InsertUpdateTaskContent({
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
               {/* TASK_ID */}
-              {isUpdate && (
+              {userInfo !== null && isUpdate && userInfo.is_admin === "SI" && (
                 <DinamicInputNumber<TaskFormValues>
                   name="id"
                   label="ID de tarea"
@@ -175,9 +233,25 @@ export function InsertUpdateTaskContent({
                   min={1}
                   max={99}
                   disabled
-                  /* rules={{
+                  rules={{
                     required: "El ID de tarea es necesario",
-                  }} */
+                  }}
+                />
+              )}
+
+              {/* USER_ID */}
+              {!isUpdate && userInfo !== null && userInfo.is_admin === "SI" && (
+                <DinamicInputNumber<TaskFormValues>
+                  name="user_id"
+                  label="ID de usuario"
+                  placeholder="Ingrese el ID del usuario que realiza la tarea"
+                  min={1}
+                  max={99}
+                  disabled={false}
+                  rules={{
+                    required:
+                      "El ID del usuario que realiza la tarea es necesario",
+                  }}
                 />
               )}
 
@@ -187,88 +261,49 @@ export function InsertUpdateTaskContent({
                   name="title"
                   label="Tarea"
                   placeholder="Nombre cool"
-                  isTextArea={false}
-                  rules={
-                    {
-                      /* required: "El título es necesario",
-                        minLength: {
-                          value: 2,
-                          message:
-                            "El título debe tener al menos 2 caracteres",
-                        },
-                        maxLength: {
-                          value: 50,
-                          message:
-                            "El título no puede tener más de 50 caracteres",
-                        }, */
-                    }
-                  }
+                  rules={{
+                    required: "El título es necesario",
+                    minLength: {
+                      value: 2,
+                      message: "El título debe tener al menos 2 caracteres",
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: "El título no puede tener más de 50 caracteres",
+                    },
+                  }}
                 />
 
                 {/* ESTADO */}
-                <div className="flex flex-col gap-2 mb-4">
-                  <p>Estado</p>
-                  <Controller
-                    name="state"
-                    control={methods.control}
-                    render={({ field }) => (
-                      <Combobox
-                        items={taskStates}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        itemToStringValue={(state) => state}
-                      >
-                        <ComboboxInput
-                          placeholder="Seleccionar estado"
-                          className={`outline-none w-full py-4 border font-bold border-neutral-200 rounded-xl transition-all duration-300 ${getTwTextColor(field.value)}`}
-                        />
-
-                        <ComboboxContent className="bg-white border border-neutral-200">
-                          <ComboboxEmpty>
-                            No se encontraron países
-                          </ComboboxEmpty>
-
-                          <ComboboxList>
-                            {(state) => (
-                              <ComboboxItem
-                                key={state}
-                                value={state}
-                                className={"data-highlighted:bg-neutral-200"}
-                              >
-                                <div className="flex flex-col">
-                                  <span>{state}</span>
-                                </div>
-                              </ComboboxItem>
-                            )}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
-                    )}
-                  />
-                </div>
+                <DinamicCombobox<TaskFormValues>
+                  name="state"
+                  label="Estado"
+                  items={taskStates}
+                  placeholder="Seleccionar estado"
+                  rules={{
+                    required: "El estado es necesario",
+                  }}
+                  getTextColor={getTwTextColor}
+                />
               </div>
 
               {/* DESCRIPTION */}
-              <DinamicInputText<TaskFormValues>
+              <DinamicInputTextArea<TaskFormValues>
                 name="description"
                 label="Descripción"
                 placeholder="Necesito hacer esto... Necesito llevar esto a... Comprar dos docenas de huevos..."
-                isTextArea={true}
-                rules={
-                  {
-                    /* required: "El título es necesario",
-                        minLength: {
-                          value: 2,
-                          message:
-                            "La descripción debe tener al menos 2 caracteres",
-                        },
-                        maxLength: {
-                          value: 750,
-                          message:
-                            "La descripción no puede tener más de 750 caracteres",
-                        }, */
-                  }
-                }
+                rules={{
+                  required: "El título es necesario",
+                  minLength: {
+                    value: 2,
+                    message: "La descripción debe tener al menos 2 caracteres",
+                  },
+                  maxLength: {
+                    value: 750,
+                    message:
+                      "La descripción no puede tener más de 750 caracteres",
+                  },
+                }}
               />
             </motion.div>
           )

@@ -1,11 +1,19 @@
 "use client";
 
+/* API CALLS */
+import {
+  insertUser,
+  selectUserById,
+  updateUser,
+} from "@/src/Users/Infrastructure/UserController";
+
 /* COMPONENTS */
 import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
 import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
+
 import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
-import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
 import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
+import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
 
 /* HOOKS */
 import { useForm, FormProvider } from "react-hook-form";
@@ -17,13 +25,6 @@ import { InsertUpdateUserIcon } from "@/components/svg/users/InsertUpdateUserIco
 
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
-
-/* SERVER ACTION */
-import {
-  insertUser,
-  selectUserById,
-  updateUser,
-} from "@/src/Users/Infrastructure/userController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -63,24 +64,41 @@ export function InsertUpdateUserContent({
       formData.append("email", data.email);
       formData.append("password", data.password);
       formData.append("password_confirm", data.password_confirm);
+      formData.append("is_admin", "NO");
 
       if (isUpdate) {
         const response = await updateUser(formData);
 
         if (response.ok) {
-          setAnnouncement(true, true, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: true,
+            message: response.message,
+          });
         } else {
-          setAnnouncement(true, false, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
         }
       } else {
         const response = await insertUser(formData);
 
         if (response.ok) {
-          setAnnouncement(true, true, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: true,
+            message: response.message,
+          });
 
-          //methods.reset();
+          methods.reset();
         } else {
-          setAnnouncement(true, false, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
         }
       }
 
@@ -110,7 +128,11 @@ export function InsertUpdateUserContent({
             });
             endLoading();
           } else {
-            setAnnouncement(true, false, response.message);
+            setAnnouncement({
+              isActivated: true,
+              isOk: false,
+              message: response.message,
+            });
 
             router.push("/users");
           }
@@ -174,10 +196,8 @@ export function InsertUpdateUserContent({
                 name="user_name"
                 label="Nombre de usuario"
                 placeholder="Nombre cool"
-                isTextArea={false}
-                rules={
-                  {
-                    /* required: "El nombre de usuario es necesario",
+                rules={{
+                  required: "El nombre de usuario es necesario",
                   minLength: {
                     value: 2,
                     message:
@@ -187,9 +207,8 @@ export function InsertUpdateUserContent({
                     value: 50,
                     message:
                       "El nombre de usuario no puede tener más de 50 caracteres",
-                  }, */
-                  }
-                }
+                  },
+                }}
               />
 
               {/* CORREO */}
@@ -197,22 +216,17 @@ export function InsertUpdateUserContent({
                 name="email"
                 label="Correo"
                 placeholder="example@something.com"
-                isTextArea={false}
-                rules={
-                  {
-                    /* required: "El correo es necesario",
+                rules={{
+                  required: "El correo es necesario",
                   minLength: {
                     value: 2,
-                    message:
-                      "El correo debe tener al menos 2 caracteres",
+                    message: "El correo debe tener al menos 2 caracteres",
                   },
                   maxLength: {
                     value: 50,
-                    message:
-                      "El correo no puede tener más de 50 caracteres",
-                  }, */
-                  }
-                }
+                    message: "El correo no puede tener más de 50 caracteres",
+                  },
+                }}
               />
 
               {/* PASSWORD */}
@@ -221,19 +235,17 @@ export function InsertUpdateUserContent({
                 label="Contraseña"
                 type="password"
                 placeholder="********"
-                isTextArea={false}
-                rules={
-                  {
-                    /* minLength: {
+                rules={{
+                  minLength: {
                     value: 2,
                     message: "La contraseña debe tener al menos 2 caracteres",
                   },
                   maxLength: {
                     value: 50,
-                    message: "La contraseña no puede tener más de 50 caracteres",
-                  }, */
-                  }
-                }
+                    message:
+                      "La contraseña no puede tener más de 50 caracteres",
+                  },
+                }}
               />
 
               {/* PASSWORD_CONFIRM */}
@@ -242,19 +254,18 @@ export function InsertUpdateUserContent({
                 label="Confirmar contraseña"
                 type="password"
                 placeholder="********"
-                isTextArea={false}
-                rules={
-                  {
-                    /*   minLength: {
+                rules={{
+                  minLength: {
                     value: 2,
-                    message: "La contraseña confirmada debe tener al menos 2 caracteres",
+                    message:
+                      "La contraseña confirmada debe tener al menos 2 caracteres",
                   },
                   maxLength: {
                     value: 50,
-                    message: "La contraseña confirmada no puede tener más de 50 caracteres",
-                  }, */
-                  }
-                }
+                    message:
+                      "La contraseña confirmada no puede tener más de 50 caracteres",
+                  },
+                }}
               />
             </motion.div>
           )

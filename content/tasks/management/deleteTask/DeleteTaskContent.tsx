@@ -1,14 +1,22 @@
 "use client";
 
+/* API CALLS */
+import { deleteTask } from "@/src/Tasks/Infrastructure/TaskController";
+
+/* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 
 /* HOOKS */
 import { useForm, FormProvider } from "react-hook-form";
 import { useState } from "react";
+
+/* ICONS */
 import { Loader, Trash2 } from "lucide-react";
+
+/* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
-import { deleteTask } from "@/src/Tasks/Infrastructure/taskController";
 import { useModal } from "@/stores/modal/modalStore";
+import { useTasksFilter } from "@/stores/filter/tasks/filterTasksStore";
 
 export function DeleteTaskContent({
   title,
@@ -17,9 +25,11 @@ export function DeleteTaskContent({
   title: string;
   task_id: number;
 }) {
-  const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
-  const { modalBody, modalTitle, setModal } = useModal();
+  const { modal, setModal } = useModal();
+  const { filter, setFilter } = useTasksFilter();
+
+  const [deleting, setDeleting] = useState(false);
 
   const methods = useForm<{ id: number }>({
     defaultValues: {
@@ -27,21 +37,40 @@ export function DeleteTaskContent({
     },
   });
 
-  const onSubmit = async ({ id }: { id: number }) => {
+  const onSubmit = async () => {
     try {
       setDeleting(true);
 
       const formData = new FormData();
 
-      formData.append("id", id.toString());
+      formData.append("id", task_id.toString());
 
       const response = await deleteTask(formData);
 
       if (response.ok) {
-        setAnnouncement(true, true, response.message);
-        setModal(false, modalTitle ?? "", modalBody);
+        setFilter({
+          page: 0,
+          perPage: filter?.perPage ?? 10,
+          order: filter?.order ?? "asc",
+          orderBy: filter?.orderBy ?? "id",
+          filtersObject: filter?.filtersObject,
+        });
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: response.message,
+        });
+        setModal({
+          isActivated: false,
+          title: modal.title ?? "",
+          body: modal.body,
+        });
       } else {
-        setAnnouncement(true, false, response.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
       }
 
       setDeleting(false);
@@ -71,7 +100,11 @@ export function DeleteTaskContent({
                   deleting
                     ? () => {}
                     : () => {
-                        setModal(false, modalTitle ?? "", modalBody);
+                        setModal({
+                          isActivated: false,
+                          title: modal.title ?? "",
+                          body: modal.body,
+                        });
                       }
                 }
                 backgroundColorHover="#22c55e"
