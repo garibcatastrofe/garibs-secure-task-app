@@ -12,6 +12,7 @@ export async function proxy(request: NextRequest) {
     });
 
     if (!res.ok) {
+      console.log("Redirigiendo a /...")
       return NextResponse.redirect(new URL("/", request.url));
     }
 
