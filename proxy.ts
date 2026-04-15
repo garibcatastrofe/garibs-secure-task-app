@@ -4,9 +4,9 @@ import type { NextRequest } from "next/server";
 export function proxy(request: NextRequest) {
   const user = request.cookies.get("accessToken");
 
-  if (!user) {
+  /* if (!user) {
     return NextResponse.redirect(new URL("/", request.url));
-  }
+  } */
 
   return NextResponse.next();
 }
