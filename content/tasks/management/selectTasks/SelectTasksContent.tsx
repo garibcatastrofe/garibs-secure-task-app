@@ -77,8 +77,6 @@ export function SelectTasksContent() {
   const fetchTasks = useCallback(async () => {
     if (!filter) return;
 
-    console.log(filter);
-
     try {
       setLoading(true);
 

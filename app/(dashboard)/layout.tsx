@@ -5,12 +5,21 @@ import { Announcement } from "@/components/shared/announcement/Announcement";
 import { Modal } from "@/components/shared/modal/Modal";
 import { RouteTitle } from "@/components/shared/routeTitle/RouteTitle";
 import { Sidebar } from "@/components/shared/sidebar/Sidebar";
+import {
+  selectUserById,
+  verify,
+} from "@/src/Users/Infrastructure/UserControlador";
+import { useAuthStore } from "@/stores/authentication/autenticacionStore";
+import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* STORES */
 import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
 
 /* LIBS */
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { IUserPrimitive } from "@/src/Users/Domain/Interfaces/IUserPrimitive";
 
 export default function DashboardLayout({
   children,
@@ -18,6 +27,52 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { expanded } = useSidebarStore();
+  const { setUser, user } = useAuthStore();
+  const { setAnnouncement } = useAnnouncement();
+  const [userInfo, setUserInfo] = useState<IUserPrimitive | null>(null);
+  const pathname = usePathname();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    try {
+      const fetchUser = async () => {
+        const responseVerify = await verify();
+
+        if (responseVerify.ok && responseVerify.id !== null) {
+          setUser({ user: { id: responseVerify.id } });
+
+          const responseUser = await selectUserById(
+            user === null ? responseVerify.id : user.id,
+          );
+
+          if (responseUser.ok) {
+            setUserInfo(responseUser.user);
+
+            if (pathname === "/users") {
+              if (responseUser.user.is_admin !== "SI") {
+                router.push("/home");
+              }
+            }
+          }
+        } else {
+          router.push("/")
+        }
+      };
+
+      fetchUser();
+    } catch (error) {
+      console.log("Error: ", error);
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message:
+          "Ocurrió un error al buscar el usuario, intente nuevamente más tarde",
+      });
+
+      router.push("/");
+    }
+  }, [router, setAnnouncement, setUser]);
 
   return (
     <motion.div
@@ -26,7 +81,7 @@ export default function DashboardLayout({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
     >
-      <Sidebar />
+      <Sidebar userOutside={userInfo} />
       <Announcement />
       <Modal />
       <div

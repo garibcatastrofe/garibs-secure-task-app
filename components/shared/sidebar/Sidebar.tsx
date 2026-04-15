@@ -4,7 +4,6 @@
 import {
   selectUserById,
   signOut,
-  verify,
 } from "@/src/Users/Infrastructure/UserControlador";
 
 /* DATA */
@@ -37,16 +36,21 @@ import { motion } from "framer-motion";
 /* UTILS */
 import { getInitials } from "@/utils/getInitials";
 
-export function Sidebar() {
+export function Sidebar({
+  userOutside,
+}: {
+  userOutside: IUserPrimitive | null;
+}) {
   const router = useRouter();
 
   const { expanded, toggleSidebar } = useSidebarStore();
-  const { user, setUser } = useAuthStore();
   const { setAnnouncement } = useAnnouncement();
 
   const [userInfo, setUserInfo] = useState<IUserPrimitive | null>(null);
   const [loading, setLoading] = useState(true);
   const [filteredLinks, setFilteredLinks] = useState<Links[] | null>(null);
+
+  const { setUser, user } = useAuthStore();
 
   const pathname = usePathname();
 
@@ -92,49 +96,8 @@ export function Sidebar() {
   useEffect(() => {
     try {
       const fetchUser = async () => {
-        const responseVerify = await verify();
-
-        if (responseVerify.ok && responseVerify.id !== null) {
-          setUser({ user: { id: responseVerify.id } });
-
-          const responseUser = await selectUserById(
-            user === null ? responseVerify.id : user.id,
-          );
-
-          if (responseUser.ok) {
-            setUserInfo(responseUser.user);
-            setFilteredLinks(
-              links.filter((link) => {
-                if (link.href === "/users") {
-                  return responseUser.user.is_admin === "SI";
-                }
-                return true;
-              }),
-            );
-            setLoading(false);
-          }
-        }
-      };
-
-      fetchUser();
-    } catch (error) {
-      console.log("Error: ", error);
-      setAnnouncement({
-        isActivated: true,
-        isOk: false,
-        message:
-          "Ocurrió un error al buscar el usuario, intente nuevamente más tarde",
-      });
-
-      router.push("/");
-    }
-  }, [router, setAnnouncement, setUser]);
-
-  useEffect(() => {
-    try {
-      const fetchUser = async () => {
-        if (user !== null) {
-          const response = await selectUserById(user.id);
+        if (userOutside !== null && userOutside !== undefined) {
+          const response = await selectUserById(userOutside.id ?? 0);
 
           if (response.ok) {
             setUserInfo(response.user);
@@ -169,7 +132,7 @@ export function Sidebar() {
 
       router.push("/");
     }
-  }, [router, setAnnouncement, user]);
+  }, [router, setAnnouncement, user, userOutside]);
 
   return (
     <>
@@ -200,12 +163,17 @@ export function Sidebar() {
           <nav className="flex flex-col gap-2">
             {loading ? (
               <div className="flex flex-col truncate">
-                <div className="w-full py-8 mb-1 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
-                <div className="w-full py-8 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
+                <div className="w-full py-6 mb-4 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
+                <div className="w-full py-6 rounded-lg bg-linear-to-r from-neutral-200 via-neutral-50 to-neutral-200 bg-skeleton-gradient" />
               </div>
             ) : (
               filteredLinks !== null && (
-                <div className="flex flex-col gap-2">
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  className="flex flex-col gap-2"
+                >
                   {filteredLinks.map((link) => (
                     <Link
                       key={link.href}
@@ -231,7 +199,7 @@ export function Sidebar() {
                       </div>
                     </Link>
                   ))}
-                </div>
+                </motion.div>
               )
             )}
           </nav>
