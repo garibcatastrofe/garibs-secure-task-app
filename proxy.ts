@@ -3,17 +3,11 @@ import type { NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
   try {
-    /* const res = await fetch(PORT + "/verify", {
-      method: "GET",
-      headers: {
-        cookie: request.headers.get("cookie") || "",
-      },
-    });
+    const token = request.cookies.get("accessToken");
 
-    if (!res.ok) {
-      console.log("Redirigiendo a /...")
+    if (!token) {
       return NextResponse.redirect(new URL("/", request.url));
-    } */
+    }
 
     return NextResponse.next();
   } catch {
