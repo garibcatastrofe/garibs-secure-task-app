@@ -1,7 +1,7 @@
 "use client";
 
 /* API CALLS */
-import { signIn, verify } from "@/src/Users/Infrastructure/UserController";
+import { signIn, verify } from "@/src/Users/Infrastructure/UserControlador";
 
 /* COMPONENTS */
 import { LoginUI } from "@/components/shared/loginUI/LoginUI";

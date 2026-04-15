@@ -1,7 +1,7 @@
 "use client";
 
 /* API CALLS */
-import { deleteUser } from "@/src/Users/Infrastructure/UserController";
+import { deleteUser } from "@/src/Users/Infrastructure/UserControlador";
 
 /* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
