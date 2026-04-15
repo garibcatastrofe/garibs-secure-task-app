@@ -258,7 +258,7 @@ export async function signIn(formData: FormData): Promise<{
   } catch {
     return {
       ok: false,
-      message: "Ocurrió un error al iniciar sesión",
+      message: "Ocurrió un error al ingresar",
     };
   }
 }
@@ -292,7 +292,7 @@ export async function verify(): Promise<{
   } catch {
     return {
       ok: false,
-      message: "Ocurrió un error al iniciar sesión",
+      message: "Ocurrió un error al verificar la sesión",
       id: null,
     };
   }
@@ -324,7 +324,7 @@ export async function signOut(): Promise<{
   } catch {
     return {
       ok: false,
-      message: "Ocurrió un error al iniciar sesión",
+      message: "Ocurrió un error al cerrar la sesión",
     };
   }
 }
