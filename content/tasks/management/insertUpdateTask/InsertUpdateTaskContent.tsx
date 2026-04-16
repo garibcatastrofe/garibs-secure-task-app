@@ -275,16 +275,18 @@ export function InsertUpdateTaskContent({
                 />
 
                 {/* ESTADO */}
-                <DinamicCombobox<TaskFormValues>
-                  name="state"
-                  label="Estado"
-                  items={taskStates}
-                  placeholder="Seleccionar estado"
-                  rules={{
-                    required: "El estado es necesario",
-                  }}
-                  getTextColor={getTwTextColor}
-                />
+                {isUpdate && (
+                  <DinamicCombobox<TaskFormValues>
+                    name="state"
+                    label="Estado"
+                    items={taskStates}
+                    placeholder="Seleccionar estado"
+                    rules={{
+                      required: "El estado es necesario",
+                    }}
+                    getTextColor={getTwTextColor}
+                  />
+                )}
               </div>
 
               {/* DESCRIPTION */}
